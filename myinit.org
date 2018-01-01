@@ -406,11 +406,6 @@
 * Stuff to refile as I do more Screencasts
 #+BEGIN_SRC emacs-lisp
 
-(setq user-full-name "Mike Zamansky"
-			user-mail-address "zamansky@gmail.com")
-;;--------------------------------------------------------------------------
-
-
 (global-set-key (kbd "\e\ei")
 		(lambda () (interactive) (find-file "~/Dropbox/orgfiles/i.org")))
 
