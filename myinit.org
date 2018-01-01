@@ -407,25 +407,13 @@
 #+BEGIN_SRC emacs-lisp
 
 (global-set-key (kbd "\e\ei")
-		(lambda () (interactive) (find-file "~/Dropbox/orgfiles/i.org")))
+		(lambda () (interactive) (find-file "~/org/i.org")))
 
 (global-set-key (kbd "\e\el")
-		(lambda () (interactive) (find-file "~/Dropbox/orgfiles/links.org")))
+		(lambda () (interactive) (find-file "~/org/links.org")))
 
 (global-set-key (kbd "\e\ec")
 		(lambda () (interactive) (find-file "~/.emacs.d/myinit.org")))
-
-
-;;--------------------------------------------------------------------------
-;; latex
-(use-package tex
-:ensure auctex)
-
-(defun tex-view ()
-    (interactive)
-    (tex-send-command "evince" (tex-append tex-print-file ".pdf")))
-
-
 
 
 ;; babel stuff
@@ -443,7 +431,6 @@
    ))
 
 
-
 ;; projectile
 (use-package projectile
   :ensure t
@@ -451,11 +438,12 @@
   (projectile-global-mode)
 (setq projectile-completion-system 'ivy))
 
-;(use-package counsel-projectile
-;  :ensure t
-;  :config
-;  (counsel-projectile-on))
 
+(use-package counsel-projectile
+  :ensure t
+  :config
+  ;(counsel-projectile-on)
+)
 
 
 (use-package smartparens
@@ -474,8 +462,6 @@
  ("M-<up>"   . sp-backward-up-sexp)
 ("C-M-a" . sp-beginning-of-sexp)
  ("C-M-e" . sp-end-of-sexp)
-
-
 
  ("C-M-f" . sp-forward-sexp)
  ("C-M-b" . sp-backward-sexp)
@@ -519,8 +505,6 @@
 
 ;;--------------------------------------------
 
-
-
 (use-package cider
   :ensure t 
   :config
@@ -559,7 +543,6 @@
 (use-package git-timemachine
 :ensure t
 )
-
   
 ;; font scaling
 (use-package default-text-scale
@@ -567,8 +550,6 @@
   :config
   (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
   (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
-
-
 
 #+END_SRC
 
