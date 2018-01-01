@@ -817,7 +817,7 @@ Eshell prompt
     (use-package prodigy
     :ensure t
     :config
-    (load-if-exists "~/Dropbox/shared/prodigy-services.el")
+    (load-if-exists "~/shared/prodigy-services.el")
 )
 #+END_SRC
 
