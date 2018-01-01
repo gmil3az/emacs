@@ -136,18 +136,12 @@
   and Ivy / Counsel replace a lot of ido or helms completion functionality
   #+BEGIN_SRC emacs-lisp
   
-
-
-
    (use-package counsel
 :ensure t
   :bind
   (("M-y" . counsel-yank-pop)
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
-
-
-
 
   (use-package ivy
   :ensure t
@@ -158,7 +152,6 @@
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "%d/%d ")
   (setq ivy-display-style 'fancy))
-
 
   (use-package swiper
   :ensure t
@@ -201,46 +194,15 @@
     (use-package color-theme
       :ensure t)
 
-    ;(use-package zenburn-theme
-    ;  :ensure t
-    ;  :config (load-theme 'zenburn t))
-
-    ;(use-package spacemacs-theme
-    ;  :ensure t
-    ;  ;:init
-    ;  ;(load-theme 'spacemacs-dark t)
-    ;  )
-
-(use-package base16-theme
-:ensure t
-)
-
-(use-package moe-theme
-:ensure t)
-
-(use-package alect-themes
-:ensure t)
+    (use-package zenburn-theme
+      :ensure t
+      :config (load-theme 'zenburn t))
  
   #+END_SRC
 
   #+RESULTS:
   : t
 
-* Reveal.js
-  #+BEGIN_SRC emacs-lisp :tangle no
-    (use-package ox-reveal
-    :ensure ox-reveal)
-
-    (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-    (setq org-reveal-mathjax t)
-
-    (use-package htmlize
-    :ensure t)
-  #+END_SRC
-
-  #+RESULTS:
-  : t
-  
 * Flycheck
   #+BEGIN_SRC emacs-lisp
     (use-package flycheck
