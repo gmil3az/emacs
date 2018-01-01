@@ -1,7 +1,5 @@
 #+STARTUP: overview
 
-
-
 * interface tweaks
 #+BEGIN_SRC emacs-lisp
 (setq inhibit-startup-message t)
