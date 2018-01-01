@@ -236,21 +236,9 @@
 (use-package moe-theme
 :ensure t)
 
-(use-package eziam-theme
-:ensure t)
-
 (use-package alect-themes
 :ensure t)
-
  
-; (load-theme 'base16-flat t)
-(moe-dark)
-(use-package powerline
-:ensure t
-:config
-(powerline-moe-theme)
-)
-
   #+END_SRC
 
   #+RESULTS:
@@ -528,12 +516,11 @@
  '((python . t)
    (emacs-lisp . t)
    (C . t)
-(js . t)
+   (js . t)
    (ditaa . t)
    (dot . t)
    (org . t)
-       (shell . t )
-(latex . t )
+   (latex . t )
    ))
 
 
@@ -545,10 +532,12 @@
   (projectile-global-mode)
 (setq projectile-completion-system 'ivy))
 
-(use-package counsel-projectile
-  :ensure t
-  :config
-  (counsel-projectile-on))
+;(use-package counsel-projectile
+;  :ensure t
+;  :config
+;  (counsel-projectile-on))
+
+
 
 (use-package smartparens
 :ensure t
