@@ -867,11 +867,7 @@ Eshell prompt
 #+RESULTS:
 
 * misc
-#+BEGIN_SRC emacs-lisp
-(defun z/nikola-deploy () ""
-(interactive)
-(venv-with-virtualenv "blog" (shell-command "cd ~/gh/cestlaz.github.io; nikola github_deploy"))
-)
+#+BEGIN_SRC emacs-lisp)
 
 (defun z/swap-windows ()
 ""
