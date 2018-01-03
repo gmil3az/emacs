@@ -1009,4 +1009,14 @@ Eshell prompt
 #+RESULTS:
 : iy-go-to-or-up-to-continue-backward
 
-* https://www.emacswiki.org/emacs/FrameMove
+* Frame move
+#+BEGIN_SRC emacs-lisp
+  (use-package framemove
+    :ensure t
+    :config
+    (framemove-default-keybindings)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
