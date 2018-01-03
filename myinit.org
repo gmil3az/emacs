@@ -1,6 +1,6 @@
 #+STARTUP: overview
 
-* interface tweaks
+* Interface tweaks
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (tool-bar-mode -1)
@@ -10,7 +10,7 @@
 #+RESULTS:
 : y-or-n-p
 
-* try
+* Try
 #+BEGIN_SRC emacs-lisp
   (use-package try
     :ensure t)
@@ -18,8 +18,7 @@
 
 #+RESULTS:
 
-* which key
-Brings up some help
+* Which key
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :ensure t 
@@ -31,7 +30,6 @@ Brings up some help
 : t
 
 * Org mode
-Org bullets makes things look pretty
 #+BEGIN_SRC emacs-lisp
   (setenv "BROWSER" "chromium-browser")
 
@@ -119,7 +117,7 @@ Org bullets makes things look pretty
 #+RESULTS:
 : ox-beamer
 
-* Ace windows for easy window switching
+* Ace windows
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
     :ensure t
@@ -174,7 +172,7 @@ Org bullets makes things look pretty
 #+RESULTS:
 : counsel-find-file
 
-* Avy - navigate by searching for a letter on the screen and jumping to it
+* Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
@@ -197,7 +195,7 @@ Org bullets makes things look pretty
 
 #+RESULTS:
 
-* Themes and modeline
+* Themes / Modeline
 #+BEGIN_SRC emacs-lisp
   (use-package color-theme
     :ensure t)
@@ -257,7 +255,7 @@ Org bullets makes things look pretty
 
 #+RESULTS:
 
-* Undo Tree
+* Undo tree
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
     :ensure t
@@ -302,7 +300,7 @@ Org bullets makes things look pretty
 #+RESULTS:
 : revert-buffer
 
-* iedit and narrow / widen dwim
+* IEdit and narrow / Widen dwim
 #+BEGIN_SRC emacs-lisp
   ; mark and edit all copies of the marked region simultaniously. 
   (use-package iedit
@@ -404,7 +402,7 @@ Org bullets makes things look pretty
 #+RESULTS:
 | (lambda nil (define-key js-mode-map (kbd C-x C-e) (quote nodejs-repl-send-last-sexp)) (define-key js-mode-map (kbd C-c C-r) (quote nodejs-repl-send-region)) (define-key js-mode-map (kbd C-c C-l) (quote nodejs-repl-load-file)) (define-key js-mode-map (kbd C-c C-z) (quote nodejs-repl-switch-to-repl))) | (lambda nil (tern-mode t)) | er/add-js-mode-expansions | js2-minor-mode |
 
-* DIRED
+* Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired+
     :ensure t
@@ -415,7 +413,7 @@ Org bullets makes things look pretty
 #+RESULTS:
 : t
 
-* Stuff to refile as I do more Screencasts
+* Stuff to refile
 #+BEGIN_SRC emacs-lisp
 
   (global-set-key (kbd "\e\ei")
@@ -626,7 +624,7 @@ Org bullets makes things look pretty
 
 #+RESULTS:
 
-* Testing Stuff
+* Testing stuff
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'turn-on-flyspell)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
@@ -635,7 +633,7 @@ Org bullets makes things look pretty
 #+RESULTS:
 | turn-on-auto-fill | turn-on-flyspell | er/add-org-mode-expansions | (lambda nil (org-bullets-mode 1)) | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-ac/setup-current-buffer |
 
-* Better Shell
+* Better shell
 #+BEGIN_SRC emacs-lisp :tangle no
   (use-package better-shell
     :ensure t
@@ -763,7 +761,7 @@ Eshell prompt
 #+RESULTS:
 | lambda | nil | (concat (propertize (abbreviate-file-name (eshell/pwd)) (quote face) (quote eshell-prompt)) (when (and dotemacs-eshell/prompt-git-info (fboundp (function vc-git-branches))) (let ((branch (car (vc-git-branches)))) (when branch (concat (propertize  [ (quote face) (quote font-lock-keyword-face)) (propertize branch (quote face) (quote font-lock-function-name-face)) (let* ((status (shell-command-to-string git status --porcelain)) (parts (split-string status \n t  )) (states (mapcar (function string-to-char) parts)) (added (count-if (lambda (char) (= char 65)) states)) (modified (count-if (lambda (char) (= char 77)) states)) (deleted (count-if (lambda (char) (= char 68)) states))) (when (> (+ added modified deleted) 0) (propertize (format  +%d ~%d -%d added modified deleted) (quote face) (quote font-lock-comment-face)))) (propertize ] (quote face) (quote font-lock-keyword-face)))))) (when (and (boundp (function venv-current-name)) venv-current-name) (concat (epe-colorize-with-face  [ (quote epe-venv-face)) (propertize venv-current-name (quote face) (` (:foreground #2E8B57 :slant italic))) (epe-colorize-with-face ] (quote epe-venv-face)))) (propertize  $  (quote face) (quote font-lock-constant-face))) |
 
-* c++
+* C++
 #+BEGIN_SRC emacs-lisp
   (use-package ggtags
     :ensure t
@@ -804,7 +802,7 @@ Eshell prompt
 
 #+RESULTS:
 
-* IBUFFER
+* IBuffer
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "C-x C-b") 'ibuffer)
   (setq ibuffer-saved-filter-groups
@@ -891,7 +889,7 @@ Eshell prompt
 #+RESULTS:
 : t
 
-* misc
+* Misc
 #+BEGIN_SRC emacs-lisp
   (defun z/swap-windows ()
     ""
@@ -930,7 +928,7 @@ Eshell prompt
 #+RESULTS:
 | lambda | nil | (flycheck-add-next-checker (quote haskell-dante) (quote (warning . haskell-hlint))) |
 
-* personal keymap
+* Personal keymap
 #+BEGIN_SRC emacs-lisp
   ;; unset C- and M- digit keys
   (dotimes (n 10)
@@ -960,7 +958,7 @@ Eshell prompt
 #+RESULTS:
 : z/swap-windows
 
-* shell-pop 
+* Shell-pop 
 #+BEGIN_SRC emacs-lisp
   (use-package shell-pop
     :ensure t
@@ -975,7 +973,7 @@ Eshell prompt
 #+RESULTS:
 : shell-pop
 
-* Wgrep
+* WGrep
 #+BEGIN_SRC emacs-lisp
   (use-package wgrep
     :ensure t
@@ -996,7 +994,7 @@ Eshell prompt
 #+RESULTS:
 : t
 
-* iy-go-to-char
+* Iy-go-to-char
 #+BEGIN_SRC emacs-lisp
   (use-package iy-go-to-char
     :ensure t
@@ -1009,7 +1007,7 @@ Eshell prompt
 #+RESULTS:
 : iy-go-to-or-up-to-continue-backward
 
-* Frame move
+* Framemove
 #+BEGIN_SRC emacs-lisp
   (use-package framemove
     :ensure t
