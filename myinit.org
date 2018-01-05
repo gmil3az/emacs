@@ -999,7 +999,6 @@ Eshell prompt
   (use-package key-chord
     :ensure t
     :defer nil
-    :commands (key-chord-define-global)
     :config (key-chord-mode +1))
 
   (use-package jump-char
