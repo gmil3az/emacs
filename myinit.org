@@ -994,23 +994,23 @@ Eshell prompt
 #+RESULTS:
 : t
 
-* Keychord and iy-go-to-char
+* Keychord and jump-char
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord
     :ensure t
     :commands (key-chord-define-global)
     :config (key-chord-mode +1))
 
-  (use-package iy-go-to-char
+  (use-package jump-char
     :ensure t
     :after (key-chord)
-    :init (key-chord-define-global "fj" 'iy-go-to-char)
-    (key-chord-define-global "fk" 'iy-go-to-char-backward)
-    (global-set-key (kbd "C-c ;") 'iy-go-to-or-up-to-continue)
-    (global-set-key (kbd "C-c ,") 'iy-go-to-or-up-to-continue-backward))
+    :commands (jump-char-forward jump-char-backward)
+    :init (key-chord-define-global "fj" 'jump-char-forward)
+    (key-chord-define-global "fk" 'jump-char-backward))
 #+END_SRC
 
 #+RESULTS:
+: jump-char-backward
 
 * Framemove
 #+BEGIN_SRC emacs-lisp
