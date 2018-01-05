@@ -994,18 +994,23 @@ Eshell prompt
 #+RESULTS:
 : t
 
-* Iy-go-to-char
+* Keychord and iy-go-to-char
 #+BEGIN_SRC emacs-lisp
+  (use-package key-chord
+    :ensure t
+    :commands (key-chord-define-global)
+    :config (key-chord-mode +1))
+
   (use-package iy-go-to-char
     :ensure t
-    :bind (("C-c f" . iy-go-to-char)
-           ("C-c F" . iy-go-to-char-backward)
-           ("C-c ;" . iy-go-to-or-up-to-continue)
-           ("C-c ," . iy-go-to-or-up-to-continue-backward)))
+    :after (key-chord)
+    :init (key-chord-define-global "fj" 'iy-go-to-char)
+    (key-chord-define-global "fk" 'iy-go-to-char-backward)
+    (global-set-key (kbd "C-c ;") 'iy-go-to-or-up-to-continue)
+    (global-set-key (kbd "C-c ,") 'iy-go-to-or-up-to-continue-backward))
 #+END_SRC
 
 #+RESULTS:
-: iy-go-to-or-up-to-continue-backward
 
 * Framemove
 #+BEGIN_SRC emacs-lisp
@@ -1047,5 +1052,3 @@ Eshell prompt
 
 #+RESULTS:
 | enable-paredit-mode |
-
-* http://emacsredux.com/blog/2013/04/28/execute-commands-ninja-style-with-key-chord-mode/
