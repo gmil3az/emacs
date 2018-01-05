@@ -1033,10 +1033,19 @@ Eshell prompt
 #+RESULTS:
 : mc/mark-all-like-this
 
+* Paredit
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :ensure t
+    :defer t
+    :init (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+    (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+    (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
+#+END_SRC
+
+#+RESULTS:
+| enable-paredit-mode |
+
 * http://emacsredux.com/blog/2013/04/28/execute-commands-ninja-style-with-key-chord-mode/
-
-* https://github.com/abo-abo/avy
-
-* http://danmidwood.com/content/2014/11/21/animated-paredit.html
-
-* https://www.emacswiki.org/emacs/ParEdit
