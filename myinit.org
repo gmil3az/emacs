@@ -998,6 +998,7 @@ Eshell prompt
 #+BEGIN_SRC emacs-lisp
   (use-package key-chord
     :ensure t
+    :defer nil
     :commands (key-chord-define-global)
     :config (key-chord-mode +1))
 
@@ -1010,7 +1011,6 @@ Eshell prompt
 #+END_SRC
 
 #+RESULTS:
-: jump-char-backward
 
 * Framemove
 #+BEGIN_SRC emacs-lisp
