@@ -1241,7 +1241,7 @@ Move Where I mean
 #+END_SRC
 
 #+RESULTS:
-: recentf-open-files
+P: recentf-open-files
 
 * Ido-imenu-push-mark
 #+BEGIN_SRC emacs-lisp
@@ -1306,3 +1306,13 @@ Move Where I mean
 #+RESULTS:
 : ido-imenu-push-mark
 
+* Move more quickly
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-S-n") (lambda () (interactive) (ignore-errors (next-line 5))))
+  (global-set-key (kbd "C-S-p") (lambda () (interactive)  (ignore-errors (previous-line 5))))
+  (global-set-key (kbd "C-S-f") (lambda () (interactive)  (ignore-errors (forward-char 5))))
+  (global-set-key (kbd "C-S-b") (lambda () (interactive)  (ignore-errors (backward-char 5))))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (interactive) | (ignore-errors (backward-char 5)) |
