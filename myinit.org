@@ -1216,3 +1216,17 @@ string-edit-at-point
 #+RESULTS:
 : t
 
+* Mwim
+Move Where I mean
+#+BEGIN_SRC emacs-lisp
+  (use-package mwim
+    :ensure t
+    :defer nil
+    :init
+    (global-set-key (kbd "C-a") 'mwim-beginning-of-line-or-code)
+    (global-set-key (kbd "C-e") 'mwim-end-of-line-or-code))
+#+END_SRC
+
+#+RESULTS:
+: mwim-end-of-line-or-code
+
