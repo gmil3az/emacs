@@ -984,11 +984,11 @@ Eshell prompt
 
 * Regex
 #+BEGIN_SRC emacs-lisp
-  (use-package pcre2el
-    :ensure t
-    :config 
-    (pcre-mode)
-    )
+  ;; (use-package pcre2el
+  ;;   :ensure t
+  ;;   :config 
+  ;;   (pcre-mode)
+  ;;   )
 #+END_SRC
 
 #+RESULTS:
@@ -1181,7 +1181,7 @@ Eshell prompt
   (global-set-key (kbd "C-c w")         (quote copy-word))
   (global-set-key (kbd "C-c l")         (quote copy-line))
   (global-set-key (kbd "C-c p")         (quote copy-paragraph))
-  (global-set-key (kbd "C-c s")         (quote thing-copy-string-to-mark))
+  ;;(global-set-key (kbd "C-c s")         (quote thing-copy-string-to-mark))
   (global-set-key (kbd "C-c a")         (quote thing-copy-parenthesis-to-mark))
 #+END_SRC
 
@@ -1196,4 +1196,23 @@ string-edit-at-point
 #+END_SRC
 
 #+RESULTS:
+
+* Visual-regexp and visual-regexp-steroids
+#+BEGIN_SRC emacs-lisp
+  (use-package visual-regexp
+    :ensure t
+    :defer nil)
+
+  (use-package visual-regexp-steroids
+    :ensure t
+    :defer nil
+    :config (define-key global-map (kbd "C-c r") 'vr/replace)
+    (define-key global-map (kbd "C-c q") 'vr/query-replace)
+    (define-key global-map (kbd "C-c m") 'vr/mc-mark)
+    (define-key esc-map (kbd "C-r") 'vr/isearch-backward)
+    (define-key esc-map (kbd "C-s") 'vr/isearch-forward))
+#+END_SRC
+
+#+RESULTS:
+: vr/isearch-forward
 
