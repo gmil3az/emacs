@@ -1078,3 +1078,14 @@ Eshell prompt
 #+RESULTS:
 : change-outer
 
+* Move-text
+#+BEGIN_SRC emacs-lisp
+  (use-package move-text
+    :ensure t
+    :bind (("<C-S-down>" . move-text-down)
+           ("<C-S-up>" . move-text-up)))
+#+END_SRC
+
+#+RESULTS:
+: move-text-up
+
