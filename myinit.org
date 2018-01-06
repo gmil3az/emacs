@@ -999,7 +999,7 @@ Eshell prompt
   (use-package key-chord
     :ensure t
     :defer nil
-    :config (key-chord-mode +1))
+    :config (key-chord-mode 1))
 
   (use-package jump-char
     :ensure t
@@ -1010,6 +1010,7 @@ Eshell prompt
 #+END_SRC
 
 #+RESULTS:
+: jump-char-backward
 
 * Framemove
 #+BEGIN_SRC emacs-lisp
@@ -1051,3 +1052,17 @@ Eshell prompt
 
 #+RESULTS:
 | enable-paredit-mode |
+* Smart-forward
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-forward
+    :ensure t
+    :bind (("M-<up>" . smart-up)
+           ("M-<down>" . smart-down)
+           ("M-<left>" . smart-backward)
+           ("M-<right>" . smart-forward)
+           ))
+#+END_SRC
+
+#+RESULTS:
+: smart-forward
+
