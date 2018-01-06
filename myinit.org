@@ -1187,3 +1187,12 @@ Eshell prompt
 
 #+RESULTS:
 : thing-copy-parenthesis-to-mark
+
+* String-edit
+#+BEGIN_SRC emacs-lisp
+  (use-package string-edit
+    :ensure t)
+#+END_SRC
+
+#+RESULTS:
+
