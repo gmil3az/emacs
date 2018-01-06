@@ -1316,3 +1316,14 @@ P: recentf-open-files
 
 #+RESULTS:
 | lambda | nil | (interactive) | (ignore-errors (backward-char 5)) |
+
+* Back button
+#+BEGIN_SRC emacs-lisp
+  (use-package back-button
+    :ensure t
+    :config (back-button-mode 1)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
