@@ -1066,3 +1066,15 @@ Eshell prompt
 #+RESULTS:
 : smart-forward
 
+* Change-inner
+#+BEGIN_SRC emacs-lisp
+  (use-package change-inner
+    :ensure t
+    :bind (("M-i" . change-inner)
+           ("M-o" . change-outer)
+           ))
+#+END_SRC
+
+#+RESULTS:
+: change-outer
+
