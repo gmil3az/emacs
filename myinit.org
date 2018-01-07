@@ -1,33 +1,835 @@
 #+STARTUP: overview
 
-* Interface tweaks
+* Appearance
+
+** Interface tweaks
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (tool-bar-mode -1)
+  (global-hl-line-mode t)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
 #+RESULTS:
 : y-or-n-p
 
-* Try
+** Themes / Modeline
 #+BEGIN_SRC emacs-lisp
-  (use-package try
+  (use-package color-theme
+    :ensure t)
+
+  (use-package zenburn-theme
+    :ensure t
+    :config (load-theme 'zenburn t))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Beacon
+#+BEGIN_SRC emacs-lisp
+  (use-package beacon
+    :ensure t
+    :config
+    (beacon-mode 1)
+  ; (setq beacon-color "#666600")
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+* Editing and Viewing
+** Multiple cursors
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :bind (("C-S-c C-S-c" . mc/edit-lines)
+           ("C->" . mc/mark-next-like-this)
+           ("C-<" . mc/mark-previous-like-this)
+           ("C-c C-<" . mc/mark-all-like-this)))
+
+#+END_SRC
+
+#+RESULTS:
+: mc/mark-all-like-this
+
+** Copy without selection
+#+BEGIN_SRC emacs-lisp
+  (defun get-point (symbol &optional arg)
+    "get the point"
+    (funcall symbol arg)
+    (point)
+    )
+
+  (defun copy-thing (begin-of-thing end-of-thing &optional arg)
+    "copy thing between beg & end into kill ring"
+    (save-excursion
+      (let ((beg (get-point begin-of-thing 1))
+            (end (get-point end-of-thing arg)))
+        (copy-region-as-kill beg end)))
+    )
+
+  (defun paste-to-mark(&optional arg)
+    "Paste things to mark, or to the prompt in shell-mode"
+    (let ((pasteMe 
+           (lambda()
+             (if (string= "shell-mode" major-mode)
+                 (progn (comint-next-prompt 25535) (yank))
+               (progn (goto-char (mark)) (yank) )))))
+      (if arg
+          (if (= arg 1)
+              nil
+            (funcall pasteMe))
+        (funcall pasteMe))
+      ))
+
+  (defun copy-word (&optional arg)
+    "Copy words at point into kill-ring"
+    (interactive "P")
+    (copy-thing 'backward-word 'forward-word arg)
+    ;;(paste-to-mark arg)
+    )
+
+  (defun copy-line (&optional arg)
+    "Save current line into Kill-Ring without mark the line "
+    (interactive "P")
+    (copy-thing 'beginning-of-line 'end-of-line arg)
+    ;;(paste-to-mark arg)
+    )
+
+  (defun copy-paragraph (&optional arg)
+    "Copy paragraphes at point"
+    (interactive "P")
+    (copy-thing 'backward-paragraph 'forward-paragraph arg)
+    ;;(paste-to-mark arg)
+    )
+
+  (defun beginning-of-string(&optional arg)
+    "  "
+    (re-search-backward "[ \t]" (line-beginning-position) 3 1)
+    (if (looking-at "[\t ]")  (goto-char (+ (point) 1)) )
+    )
+  (defun end-of-string(&optional arg)
+    " "
+    (re-search-forward "[ \t]" (line-end-position) 3 arg)
+    (if (looking-back "[\t ]") (goto-char (- (point) 1)) )
+    )
+
+  (defun thing-copy-string-to-mark(&optional arg)
+    " Try to copy a string and paste it to the mark
+       When used in shell-mode, it will paste string on shell prompt by default "
+    (interactive "P")
+    (copy-thing 'beginning-of-string 'end-of-string arg)
+    (paste-to-mark arg)
+    )
+
+  (defun beginning-of-parenthesis(&optional arg)
+    "  "
+    (re-search-backward "[[<(?\"]" (line-beginning-position) 3 1)
+    (if (looking-at "[[<(?\"]")  (goto-char (+ (point) 1)) )
+    )
+  (defun end-of-parenthesis(&optional arg)
+    " "
+    (re-search-forward "[]>)?\"]" (line-end-position) 3 arg)
+    (if (looking-back "[]>)?\"]") (goto-char (- (point) 1)) )
+    )
+
+  (defun thing-copy-parenthesis-to-mark(&optional arg)
+    " Try to copy a parenthesis and paste it to the mark
+       When used in shell-mode, it will paste parenthesis on shell prompt by default "
+    (interactive "P")
+    (copy-thing 'beginning-of-parenthesis 'end-of-parenthesis arg)
+    (paste-to-mark arg)
+    )
+
+  (global-set-key (kbd "C-c w")         (quote copy-word))
+  (global-set-key (kbd "C-c l")         (quote copy-line))
+  (global-set-key (kbd "C-c p")         (quote copy-paragraph))
+  ;;(global-set-key (kbd "C-c s")         (quote thing-copy-string-to-mark))
+  (global-set-key (kbd "C-c a")         (quote thing-copy-parenthesis-to-mark))
+#+END_SRC
+
+#+RESULTS:
+: thing-copy-parenthesis-to-mark
+
+** Expand-region
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :config 
+    (global-set-key (kbd "C-=") 'er/expand-region))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Change-inner
+#+BEGIN_SRC emacs-lisp
+  (use-package change-inner
+    :ensure t
+    :bind (("M-i" . change-inner)
+           ("M-o" . change-outer)
+           ))
+#+END_SRC
+
+#+RESULTS:
+: change-outer
+
+** MOVE-text
+#+BEGIN_SRC emacs-lisp
+  (use-package move-text
+    :ensure t
+    :bind (("<C-S-down>" . move-text-down)
+           ("<C-S-up>" . move-text-up)))
+#+END_SRC
+
+#+RESULTS:
+: move-text-up
+
+** String-edit
+string-edit-at-point
+#+BEGIN_SRC emacs-lisp
+  (use-package string-edit
     :ensure t)
 #+END_SRC
 
 #+RESULTS:
 
-* Which key
+** Hungry delete
 #+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :ensure t 
+  (use-package hungry-delete
+    :ensure t
     :config
-    (which-key-mode))
+    (global-hungry-delete-mode))
+
 #+END_SRC
 
 #+RESULTS:
 : t
+
+** Paredit
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :ensure t
+    :defer t
+    :init (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+    (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+    (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
+#+END_SRC
+
+#+RESULTS:
+| enable-paredit-mode |
+
+** Undo tree
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :init
+    (global-undo-tree-mode))
+#+END_SRC
+
+#+RESULTS:
+
+** IEdit and narrow / Widen dwim
+#+BEGIN_SRC emacs-lisp
+  ; mark and edit all copies of the marked region simultaniously. 
+  (use-package iedit
+    :ensure t)
+
+  ; if you're windened, narrow to the region, if you're narrowed, widen
+  ; bound to C-x n
+  (defun narrow-or-widen-dwim (p)
+    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
+  Intelligently means: region, org-src-block, org-subtree, or defun,
+  whichever applies first.
+  Narrowing to org-src-block actually calls `org-edit-src-code'.
+
+  With prefix P, don't widen, just narrow even if buffer is already
+  narrowed."
+    (interactive "P")
+    (declare (interactive-only))
+    (cond ((and (buffer-narrowed-p) (not p)) (widen))
+          ((region-active-p)
+           (narrow-to-region (region-beginning) (region-end)))
+          ((derived-mode-p 'org-mode)
+           ;; `org-edit-src-code' is not a real narrowing command.
+           ;; Remove this first conditional if you don't want it.
+           (cond ((ignore-errors (org-edit-src-code))
+                  (delete-other-windows))
+                 ((org-at-block-p)
+                  (org-narrow-to-block))
+                 (t (org-narrow-to-subtree))))
+          (t (narrow-to-defun))))
+
+  ;; (define-key endless/toggle-map "n" #'narrow-or-widen-dwim)
+  ;; This line actually replaces Emacs' entire narrowing keymap, that's
+  ;; how much I like this command. Only copy it if that's what you want.
+  (define-key ctl-x-map "n" #'narrow-or-widen-dwim)
+#+END_SRC
+
+#+RESULTS:
+: narrow-or-widen-dwim
+
+** Origami folding
+#+BEGIN_SRC emacs-lisp
+  (use-package origami
+    :ensure t)
+#+END_SRC
+
+#+RESULTS:
+
+* Movement and Navigation
+** Move more quickly
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-S-n") (lambda () (interactive) (ignore-errors (next-line 5))))
+  (global-set-key (kbd "C-S-p") (lambda () (interactive)  (ignore-errors (previous-line 5))))
+  (global-set-key (kbd "C-S-f") (lambda () (interactive)  (ignore-errors (forward-char 5))))
+  (global-set-key (kbd "C-S-b") (lambda () (interactive)  (ignore-errors (backward-char 5))))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (interactive) | (ignore-errors (backward-char 5)) |
+
+** Mwim
+Move Where I mean
+#+BEGIN_SRC emacs-lisp
+  (use-package mwim
+    :ensure t
+    :defer nil
+    :init
+    (global-set-key (kbd "C-a") 'mwim-beginning-of-line-or-code)
+    (global-set-key (kbd "C-e") 'mwim-end-of-line-or-code))
+#+END_SRC
+
+#+RESULTS:
+: mwim-end-of-line-or-code
+** Avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind ("M-s" . avy-goto-word-1)) ;; changed from char as per jcs
+#+END_SRC
+
+#+RESULTS:
+: avy-goto-word-1
+
+** Keychord / Jump-char
+#+BEGIN_SRC emacs-lisp
+  (use-package key-chord
+    :ensure t
+    :defer nil
+    :config (key-chord-mode 1))
+
+  (use-package jump-char
+    :ensure t
+    :after (key-chord)
+    :commands (jump-char-forward jump-char-backward)
+    :init
+    ;; (key-chord-define-global "fj" 'jump-char-forward)
+    ;; (key-chord-define-global "fk" 'jump-char-backward)
+    (global-set-key (kbd "M-m") 'jump-char-forward)
+    (global-set-key (kbd "M-M") 'jump-char-backward))
+#+END_SRC
+
+#+RESULTS:
+: jump-char-backward
+
+** Swiper / Ivy / Counsel
+#+BEGIN_SRC emacs-lisp
+  (use-package counsel
+    :ensure t
+    :bind
+    (("M-y" . counsel-yank-pop)
+     :map ivy-minibuffer-map
+     ("M-y" . ivy-next-line)))
+
+  (use-package ivy
+    :ensure t
+    :diminish (ivy-mode)
+    :bind (("C-x b" . ivy-switch-buffer))
+    :config
+    (ivy-mode 1)
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "%d/%d ")
+    (setq ivy-display-style 'fancy))
+
+  (use-package swiper
+    :ensure t
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-c C-r" . ivy-resume)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file))
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-display-style 'fancy)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+      ))
+#+END_SRC
+
+#+RESULTS:
+: counsel-find-file
+
+** Visual-regexp and visual-regexp-steroids
+#+BEGIN_SRC emacs-lisp
+  (use-package visual-regexp
+    :ensure t
+    :defer nil)
+
+  (use-package visual-regexp-steroids
+    :ensure t
+    :defer nil
+    :config (define-key global-map (kbd "C-c r") 'vr/replace)
+    (define-key global-map (kbd "C-c q") 'vr/query-replace)
+    (define-key global-map (kbd "C-c m") 'vr/mc-mark)
+    (define-key esc-map (kbd "C-r") 'vr/isearch-backward)
+    (define-key esc-map (kbd "C-s") 'vr/isearch-forward))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Smart-forward
+#+BEGIN_SRC emacs-lisp
+  (use-package smart-forward
+    :ensure t
+    :bind (("M-<up>" . smart-up)
+           ("M-<down>" . smart-down)
+           ("M-<left>" . smart-backward)
+           ("M-<right>" . smart-forward)
+           ))
+#+END_SRC
+
+#+RESULTS:
+: smart-forward
+
+** Ido-imenu-push-mark
+#+BEGIN_SRC emacs-lisp
+  (defun ido-imenu ()
+    "Update the imenu index and then use ido to select a symbol to navigate to.
+  Symbols matching the text at point are put first in the completion list."
+    (interactive)
+    (imenu--make-index-alist)
+    (let ((name-and-pos '())
+          (symbol-names '()))
+      (flet ((addsymbols (symbol-list)
+                         (when (listp symbol-list)
+                           (dolist (symbol symbol-list)
+                             (let ((name nil) (position nil))
+                               (cond
+                                ((and (listp symbol) (imenu--subalist-p symbol))
+                                 (addsymbols symbol))
+
+                                ((listp symbol)
+                                 (setq name (car symbol))
+                                 (setq position (cdr symbol)))
+
+                                ((stringp symbol)
+                                 (setq name symbol)
+                                 (setq position (get-text-property 1 'org-imenu-marker symbol))))
+
+                               (unless (or (null position) (null name))
+                                 (add-to-list 'symbol-names name)
+                                 (add-to-list 'name-and-pos (cons name position))))))))
+        (addsymbols imenu--index-alist))
+      ;; If there are matching symbols at point, put them at the beginning of `symbol-names'.
+      (let ((symbol-at-point (thing-at-point 'symbol)))
+        (when symbol-at-point
+          (let* ((regexp (concat (regexp-quote symbol-at-point) "$"))
+                 (matching-symbols (delq nil (mapcar (lambda (symbol)
+                                                       (if (string-match regexp symbol) symbol))
+                                                     symbol-names))))
+            (when matching-symbols
+              (sort matching-symbols (lambda (a b) (> (length a) (length b))))
+              (mapc (lambda (symbol) (setq symbol-names (cons symbol (delete symbol symbol-names))))
+                    matching-symbols)))))
+      (let* ((selected-symbol (ido-completing-read "Symbol? " symbol-names))
+             (position (cdr (assoc selected-symbol name-and-pos))))
+        (goto-char position))))
+
+  ;; Push mark when using ido-imenu
+
+  (defvar push-mark-before-goto-char nil)
+
+  (defadvice goto-char (before push-mark-first activate)
+    (when push-mark-before-goto-char
+      (push-mark)))
+
+  (defun ido-imenu-push-mark ()
+    (interactive)
+    (let ((push-mark-before-goto-char t))
+      (ido-imenu)))
+
+  (global-set-key (kbd "C-x C-i") 'ido-imenu-push-mark)
+#+END_SRC
+
+#+RESULTS:
+: ido-imenu-push-mark
+
+** Dumb jump
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :bind (("M-g o" . dumb-jump-go-other-window)
+           ("M-g j" . dumb-jump-go)
+           ("M-g x" . dumb-jump-go-prefer-external)
+           ("M-g z" . dumb-jump-go-prefer-external-other-window))
+    :config 
+    ;; (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
+    :init
+    (dumb-jump-mode)
+    :ensure
+    )
+#+END_SRC
+
+#+RESULTS:
+: dumb-jump-go-prefer-external-other-window
+
+** Back button
+#+BEGIN_SRC emacs-lisp
+  (use-package back-button
+    :ensure t
+    :config (back-button-mode 1)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Ace windows
+#+BEGIN_SRC emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :init
+    (progn
+      (setq aw-scope 'frame)
+      (global-set-key (kbd "C-x O") 'other-frame)
+      (global-set-key [remap other-window] 'ace-window)
+      (custom-set-faces
+       '(aw-leading-char-face
+         ((t (:inherit ace-jump-face-foreground :height 3.0))))) 
+      ))
+#+END_SRC
+
+#+RESULTS:
+
+** Framemove
+#+BEGIN_SRC emacs-lisp
+  (use-package framemove
+    :ensure t
+    :config
+    (framemove-default-keybindings)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** IBuffer
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("dired" (mode . dired-mode))
+                 ("org" (name . "^.*org$"))
+                 
+                 ("web" (or (mode . web-mode) (mode . js2-mode)))
+                 ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
+                 ("programming" (or
+                                 (mode . python-mode)
+                                 (mode . c++-mode)))
+                 ("emacs" (or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$")))
+                 ))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")))
+
+  ;; don't show these
+                                          ;(add-to-list 'ibuffer-never-show-predicates "zowie")
+  ;; Don't show filter groups if there are no buffers in that group
+  (setq ibuffer-show-empty-filter-groups nil)
+
+  ;; Don't ask for confirmation to delete marked buffers
+  (setq ibuffer-expert t)
+
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Treemacs
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs
+    :ensure t
+    :defer t
+    :config
+    (progn
+      (setq treemacs-follow-after-init          t
+            treemacs-width                      35
+            treemacs-indentation                2
+            treemacs-git-integration            t
+            treemacs-collapse-dirs              3
+            treemacs-silent-refresh             nil
+            treemacs-change-root-without-asking nil
+            treemacs-sorting                    'alphabetic-desc
+            treemacs-show-hidden-files          t
+            treemacs-never-persist              nil
+            treemacs-is-never-other-window      nil
+            treemacs-goto-tag-strategy          'refetch-index)
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t))
+    :bind
+    (:map global-map
+          ([f8]        . treemacs-toggle)
+          ([f9]        . treemacs-projectile-toggle)
+          ("<C-M-tab>" . treemacs-toggle)
+          ("M-0"       . treemacs-select-window)
+          ("C-c 1"     . treemacs-delete-other-windows)
+          ))
+  (use-package treemacs-projectile
+    :defer t
+    :ensure t
+    :config
+    (setq treemacs-header-function #'treemacs-projectile-create-header)
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+* Shortcuts
+** Recent files
+#+BEGIN_SRC emacs-lisp
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 25)
+  (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+#+END_SRC
+
+#+RESULTS:
+P: recentf-open-files
+
+** Personal keymap
+#+BEGIN_SRC emacs-lisp
+  ;; unset C- and M- digit keys
+  (dotimes (n 10)
+    (global-unset-key (kbd (format "C-%d" n)))
+    (global-unset-key (kbd (format "M-%d" n)))
+    )
+
+  (defun org-agenda-show-agenda-and-todo (&optional arg)
+    (interactive "P")
+    (org-agenda arg "c")
+    (org-agenda-fortnight-view))
+
+  (defun z/swap-windows ()
+    ""
+    (interactive)
+    (ace-swap-window)
+    (aw-flip-window)
+    )
+
+  ;; set up my own map
+  (define-prefix-command 'z-map)
+  (global-set-key (kbd "C-1") 'z-map)
+
+  (define-key z-map (kbd "1") 'org-global-cycle)
+  (define-key z-map (kbd "a") 'org-agenda-show-agenda-and-todo)
+  (define-key z-map (kbd "g") 'counsel-ag)
+
+  (define-key z-map (kbd "s") 'flyspell-correct-word-before-point)
+  (define-key z-map (kbd "i") (lambda () (interactive) (find-file "~/org/i.org")))
+  (define-key z-map (kbd "f") 'origami-toggle-node)
+  (define-key z-map (kbd "w") 'z/swap-windows)
+#+END_SRC
+
+#+RESULTS:
+: z/swap-windows
+
+* Code completion and Templates
+
+** Autocomplete
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-complete
+    :ensure t
+    :init
+    (progn
+      (ac-config-default)
+      (global-auto-complete-mode t)
+      ))
+#+END_SRC
+
+#+RESULTS:
+
+** Yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+      (yas-global-mode 1))
+#+END_SRC
+
+#+RESULTS:
+
+* Programming
+
+** Flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init
+    (global-flycheck-mode t))
+#+END_SRC
+
+#+RESULTS:
+
+** Emmet mode
+#+BEGIN_SRC emacs-lisp
+  (use-package emmet-mode
+    :ensure t
+    :config
+    ;; (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
+    ;; (add-hook 'web-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
+    ;; (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+    )
+#+END_SRC
+
+#+RESULTS:
+
+** Javascript
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-mode
+    :ensure t
+    :ensure ac-js2
+    :init
+    (progn
+      (add-hook 'js-mode-hook 'js2-minor-mode)
+      (add-hook 'js2-mode-hook 'ac-js2-mode)
+      ))
+
+  (use-package js2-refactor
+    :ensure t
+    :config 
+    (progn
+      (js2r-add-keybindings-with-prefix "C-c C-m")
+      ;; eg. extract function with `C-c C-m ef`.
+      (add-hook 'js2-mode-hook #'js2-refactor-mode)))
+
+  (use-package tern
+    :ensure tern
+    :ensure tern-auto-complete
+    :config
+    (progn
+      (add-hook 'js-mode-hook (lambda () (tern-mode t)))
+      (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+      (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+      (tern-ac-setup)
+      ))
+
+  ;;(use-package jade
+  ;;:ensure t
+  ;;)
+
+  (use-package nodejs-repl
+    :ensure t
+    )
+
+  (add-hook 'js-mode-hook
+            (lambda ()
+              (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-sexp)
+              (define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
+              (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
+              (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+#+END_SRC
+
+#+RESULTS:
+| (lambda nil (define-key js-mode-map (kbd C-x C-e) (quote nodejs-repl-send-last-sexp)) (define-key js-mode-map (kbd C-c C-r) (quote nodejs-repl-send-region)) (define-key js-mode-map (kbd C-c C-l) (quote nodejs-repl-load-file)) (define-key js-mode-map (kbd C-c C-z) (quote nodejs-repl-switch-to-repl))) | (lambda nil (tern-mode t)) | er/add-js-mode-expansions | js2-minor-mode |
+
+** Python
+#+BEGIN_SRC emacs-lisp
+  (setq py-python-command "python3")
+  (setq python-shell-interpreter "python3")
+
+  (use-package jedi
+    :ensure t
+    :init
+    (add-hook 'python-mode-hook 'jedi:setup)
+    (add-hook 'python-mode-hook 'jedi:ac-setup))
+
+
+  (use-package elpy
+    :ensure t
+    :config 
+    (elpy-enable))
+
+  (use-package virtualenvwrapper
+    :ensure t
+    :config
+    (venv-initialize-interactive-shells)
+    (venv-initialize-eshell))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** C++
+#+BEGIN_SRC emacs-lisp
+  (use-package ggtags
+    :ensure t
+    :config 
+    (add-hook 'c-mode-common-hook
+              (lambda ()
+                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+                  (ggtags-mode 1))))
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Haskell 
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode
+    :ensure t
+    :config
+    (require 'haskell-interactive-mode)
+    (require 'haskell-process)
+    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+    )
+
+  (use-package dante
+    :ensure t
+    :after haskell-mode
+    :commands 'dante-mode
+    :init
+    (add-hook 'haskell-mode-hook 'dante-mode)
+    (add-hook 'haskell-mode-hook 'flycheck-mode))
+
+  (add-hook 'dante-mode-hook
+            '(lambda () (flycheck-add-next-checker 'haskell-dante
+                                                   '(warning . haskell-hlint))))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (flycheck-add-next-checker (quote haskell-dante) (quote (warning . haskell-hlint))) |
+
+** Mark-down mode
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+#+END_SRC
+
+#+RESULTS:
 
 * Org mode
 #+BEGIN_SRC emacs-lisp
@@ -109,298 +911,172 @@
     (noflet ((switch-to-buffer-other-window (buf) (switch-to-buffer buf)))
       (org-capture)))
 
-  (require 'ox-beamer)
+  (add-hook 'org-mode-hook 'turn-on-flyspell)
+  (add-hook 'org-mode-hook 'turn-on-auto-fill)
 #+END_SRC
 
 #+RESULTS:
-: ox-beamer
+| turn-on-auto-fill | turn-on-flyspell | er/add-org-mode-expansions | (lambda nil (org-bullets-mode 1)) | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-ac/setup-current-buffer |
 
-* Ace windows
-#+BEGIN_SRC emacs-lisp
-  (use-package ace-window
+* Shell
+
+** Better shell
+#+BEGIN_SRC emacs-lisp :tangle no
+  (use-package better-shell
     :ensure t
-    :init
-    (progn
-      (setq aw-scope 'frame)
-      (global-set-key (kbd "C-x O") 'other-frame)
-      (global-set-key [remap other-window] 'ace-window)
-      (custom-set-faces
-       '(aw-leading-char-face
-         ((t (:inherit ace-jump-face-foreground :height 3.0))))) 
-      ))
+    :bind (("C-'" . better-shell-shell)
+           ("C-;" . better-shell-remote-open)))
 #+END_SRC
 
 #+RESULTS:
+: better-shell-remote-open
 
-* Swiper / Ivy / Counsel
+** Eshell stuff
 #+BEGIN_SRC emacs-lisp
-  (use-package counsel
-    :ensure t
-    :bind
-    (("M-y" . counsel-yank-pop)
-     :map ivy-minibuffer-map
-     ("M-y" . ivy-next-line)))
-
-  (use-package ivy
-    :ensure t
-    :diminish (ivy-mode)
-    :bind (("C-x b" . ivy-switch-buffer))
-    :config
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-count-format "%d/%d ")
-    (setq ivy-display-style 'fancy))
-
-  (use-package swiper
-    :ensure t
-    :bind (("C-s" . swiper)
-           ("C-r" . swiper)
-           ("C-c C-r" . ivy-resume)
-           ("M-x" . counsel-M-x)
-           ("C-x C-f" . counsel-find-file))
-    :config
-    (progn
-      (ivy-mode 1)
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-display-style 'fancy)
-      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-      ))
-#+END_SRC
-
-#+RESULTS:
-: counsel-find-file
-
-* Avy
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :ensure t
-    :bind ("M-s" . avy-goto-word-1)) ;; changed from char as per jcs
-#+END_SRC
-
-#+RESULTS:
-: avy-goto-word-1
-
-* Autocomplete
-#+BEGIN_SRC emacs-lisp
-  (use-package auto-complete
-    :ensure t
-    :init
-    (progn
-      (ac-config-default)
-      (global-auto-complete-mode t)
-      ))
-#+END_SRC
-
-#+RESULTS:
-
-* Themes / Modeline
-#+BEGIN_SRC emacs-lisp
-  (use-package color-theme
-    :ensure t)
-
-  (use-package zenburn-theme
-    :ensure t
-    :config (load-theme 'zenburn t))
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Flycheck
-#+BEGIN_SRC emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :init
-    (global-flycheck-mode t))
-#+END_SRC
-
-#+RESULTS:
-
-* Python
-#+BEGIN_SRC emacs-lisp
-  (setq py-python-command "python3")
-  (setq python-shell-interpreter "python3")
-
-  (use-package jedi
-    :ensure t
-    :init
-    (add-hook 'python-mode-hook 'jedi:setup)
-    (add-hook 'python-mode-hook 'jedi:ac-setup))
-
-
-  (use-package elpy
+  (use-package shell-switcher
     :ensure t
     :config 
-    (elpy-enable))
+    (setq shell-switcher-mode t)
+    :bind (("C-'" . shell-switcher-switch-buffer)
+           ("C-x 4 '" . shell-switcher-switch-buffer-other-window)
+           ("C-M-'" . shell-switcher-new-shell)))
 
-  (use-package virtualenvwrapper
-    :ensure t
-    :config
-    (venv-initialize-interactive-shells)
-    (venv-initialize-eshell))
-#+END_SRC
+  ;; Visual commands
+  (setq eshell-visual-commands '("vi" "screen" "top" "less" "more" "lynx"
+                                 "ncftp" "pine" "tin" "trn" "elm" "vim"
+                                 "nmtui" "alsamixer" "htop" "el" "elinks"
+                                 ))
+  (setq eshell-visual-subcommands '(("git" "log" "diff" "show")))
+  (setq eshell-list-files-after-cd t)
+  (defun eshell-clear-buffer ()
+    "Clear terminal"
+    (interactive)
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (eshell-send-input)))
+  (add-hook 'eshell-mode-hook
+            '(lambda()
+               (local-set-key (kbd "C-l") 'eshell-clear-buffer)))
 
-#+RESULTS:
-: t
+  (defun eshell/magit ()
+    "Function to open magit-status for the current directory"
+    (interactive)
+    (magit-status default-directory)
+    nil)
 
-* Yasnippet
-#+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :ensure t
-    :init
-      (yas-global-mode 1))
-#+END_SRC
+  ;; smart display stuff
+  (require 'eshell)
+  (require 'em-smart)
+  (setq eshell-where-to-jump 'begin)
+  (setq eshell-review-quick-commands nil)
+  (setq eshell-smart-space-goes-to-end t)
 
-#+RESULTS:
-
-* Undo tree
-#+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :ensure t
-    :init
-    (global-undo-tree-mode))
-#+END_SRC
-
-#+RESULTS:
-
-* Misc packages
-#+BEGIN_SRC emacs-lisp
-  ; Highlights the current cursor line
-  (global-hl-line-mode t)
-
-  ; flashes the cursor's line when you scroll
-  (use-package beacon
-    :ensure t
-    :config
-    (beacon-mode 1)
-  ; (setq beacon-color "#666600")
-    )
-
-  ; deletes all the whitespace when you hit backspace or delete
-  (use-package hungry-delete
-    :ensure t
-    :config
-    (global-hungry-delete-mode))
-
-  ; expand the marked region in semantic increments (negative prefix to reduce region)
-  (use-package expand-region
-    :ensure t
-    :config 
-    (global-set-key (kbd "C-=") 'er/expand-region))
-
-  (setq save-interprogram-paste-before-kill t)
-
-  (global-auto-revert-mode 1) ;; you might not want this
-  (setq auto-revert-verbose nil) ;; or this
-  (global-set-key (kbd "<f5>") 'revert-buffer)
-#+END_SRC
-
-#+RESULTS:
-: revert-buffer
-
-* IEdit and narrow / Widen dwim
-#+BEGIN_SRC emacs-lisp
-  ; mark and edit all copies of the marked region simultaniously. 
-  (use-package iedit
-    :ensure t)
-
-  ; if you're windened, narrow to the region, if you're narrowed, widen
-  ; bound to C-x n
-  (defun narrow-or-widen-dwim (p)
-    "If the buffer is narrowed, it widens. Otherwise, it narrows intelligently.
-  Intelligently means: region, org-src-block, org-subtree, or defun,
-  whichever applies first.
-  Narrowing to org-src-block actually calls `org-edit-src-code'.
-
-  With prefix P, don't widen, just narrow even if buffer is already
-  narrowed."
-    (interactive "P")
-    (declare (interactive-only))
-    (cond ((and (buffer-narrowed-p) (not p)) (widen))
-          ((region-active-p)
-           (narrow-to-region (region-beginning) (region-end)))
-          ((derived-mode-p 'org-mode)
-           ;; `org-edit-src-code' is not a real narrowing command.
-           ;; Remove this first conditional if you don't want it.
-           (cond ((ignore-errors (org-edit-src-code))
-                  (delete-other-windows))
-                 ((org-at-block-p)
-                  (org-narrow-to-block))
-                 (t (org-narrow-to-subtree))))
-          (t (narrow-to-defun))))
-
-  ;; (define-key endless/toggle-map "n" #'narrow-or-widen-dwim)
-  ;; This line actually replaces Emacs' entire narrowing keymap, that's
-  ;; how much I like this command. Only copy it if that's what you want.
-  (define-key ctl-x-map "n" #'narrow-or-widen-dwim)
-#+END_SRC
-
-#+RESULTS:
-: narrow-or-widen-dwim
-
-* Emmet mode
-#+BEGIN_SRC emacs-lisp
-  (use-package emmet-mode
-    :ensure t
-    :config
-    ;; (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
-    ;; (add-hook 'web-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
-    ;; (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
-    )
-#+END_SRC
-
-#+RESULTS:
-
-* Javascript
-#+BEGIN_SRC emacs-lisp
-  (use-package js2-mode
-    :ensure t
-    :ensure ac-js2
-    :init
-    (progn
-      (add-hook 'js-mode-hook 'js2-minor-mode)
-      (add-hook 'js2-mode-hook 'ac-js2-mode)
-      ))
-
-  (use-package js2-refactor
-    :ensure t
-    :config 
-    (progn
-      (js2r-add-keybindings-with-prefix "C-c C-m")
-      ;; eg. extract function with `C-c C-m ef`.
-      (add-hook 'js2-mode-hook #'js2-refactor-mode)))
-
-  (use-package tern
-    :ensure tern
-    :ensure tern-auto-complete
-    :config
-    (progn
-      (add-hook 'js-mode-hook (lambda () (tern-mode t)))
-      (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
-      (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-      (tern-ac-setup)
-      ))
-
-  ;;(use-package jade
-  ;;:ensure t
-  ;;)
-
-  (use-package nodejs-repl
-    :ensure t
-    )
-
-  (add-hook 'js-mode-hook
+  (add-hook 'eshell-mode-hook
             (lambda ()
-              (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-sexp)
-              (define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
-              (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-              (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+              (eshell-smart-initialize)))
+  ;; eshell here
+  (defun eshell-here ()
+    "Opens up a new shell in the directory associated with the
+  current buffer's file. The eshell is renamed to match that
+  directory to make multiple eshell windows easier."
+    (interactive)
+    (let* ((parent (if (buffer-file-name)
+                       (file-name-directory (buffer-file-name))
+                     default-directory))
+           (height (/ (window-total-height) 3))
+           (name   (car (last (split-string parent "/" t)))))
+      (split-window-vertically (- height))
+      (other-window 1)
+      (eshell "new")
+      (rename-buffer (concat "*eshell: " name "*"))
+
+      (insert (concat "ls"))
+      (eshell-send-input)))
+
+  (global-set-key (kbd "C-!") 'eshell-here)
+
 #+END_SRC
 
 #+RESULTS:
-| (lambda nil (define-key js-mode-map (kbd C-x C-e) (quote nodejs-repl-send-last-sexp)) (define-key js-mode-map (kbd C-c C-r) (quote nodejs-repl-send-region)) (define-key js-mode-map (kbd C-c C-l) (quote nodejs-repl-load-file)) (define-key js-mode-map (kbd C-c C-z) (quote nodejs-repl-switch-to-repl))) | (lambda nil (tern-mode t)) | er/add-js-mode-expansions | js2-minor-mode |
+: eshell-here
 
-* Dired
+Eshell prompt
+
+#+BEGIN_SRC emacs-lisp
+  (defcustom dotemacs-eshell/prompt-git-info
+    t
+    "Turns on additional git information in the prompt."
+    :group 'dotemacs-eshell
+    :type 'boolean)
+
+  ;; (epe-colorize-with-face "abc" 'font-lock-comment-face)
+  (defmacro epe-colorize-with-face (str face)
+    `(propertize ,str 'face ,face))
+
+  (defface epe-venv-face
+    '((t (:inherit font-lock-comment-face)))
+    "Face of python virtual environment info in prompt."
+    :group 'epe)
+
+  (setq eshell-prompt-function
+        (lambda ()
+          (concat (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
+                  (when (and dotemacs-eshell/prompt-git-info
+                             (fboundp #'vc-git-branches))
+                    (let ((branch (car (vc-git-branches))))
+                      (when branch
+                        (concat
+                         (propertize " [" 'face 'font-lock-keyword-face)
+                         (propertize branch 'face 'font-lock-function-name-face)
+                         (let* ((status (shell-command-to-string "git status --porcelain"))
+                                (parts (split-string status "\n" t " "))
+                                (states (mapcar #'string-to-char parts))
+                                (added (count-if (lambda (char) (= char ?A)) states))
+                                (modified (count-if (lambda (char) (= char ?M)) states))
+                                (deleted (count-if (lambda (char) (= char ?D)) states)))
+                           (when (> (+ added modified deleted) 0)
+                             (propertize (format " +%d ~%d -%d" added modified deleted) 'face 'font-lock-comment-face)))
+                         (propertize "]" 'face 'font-lock-keyword-face)))))
+                  (when (and (boundp #'venv-current-name) venv-current-name)
+                    (concat 
+                     (epe-colorize-with-face " [" 'epe-venv-face) 
+                     (propertize venv-current-name 'face `(:foreground "#2E8B57" :slant italic))
+                     (epe-colorize-with-face "]" 'epe-venv-face))) 
+                  (propertize " $ " 'face 'font-lock-constant-face))))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (concat (propertize (abbreviate-file-name (eshell/pwd)) (quote face) (quote eshell-prompt)) (when (and dotemacs-eshell/prompt-git-info (fboundp (function vc-git-branches))) (let ((branch (car (vc-git-branches)))) (when branch (concat (propertize  [ (quote face) (quote font-lock-keyword-face)) (propertize branch (quote face) (quote font-lock-function-name-face)) (let* ((status (shell-command-to-string git status --porcelain)) (parts (split-string status \n t  )) (states (mapcar (function string-to-char) parts)) (added (count-if (lambda (char) (= char 65)) states)) (modified (count-if (lambda (char) (= char 77)) states)) (deleted (count-if (lambda (char) (= char 68)) states))) (when (> (+ added modified deleted) 0) (propertize (format  +%d ~%d -%d added modified deleted) (quote face) (quote font-lock-comment-face)))) (propertize ] (quote face) (quote font-lock-keyword-face)))))) (when (and (boundp (function venv-current-name)) venv-current-name) (concat (epe-colorize-with-face  [ (quote epe-venv-face)) (propertize venv-current-name (quote face) (` (:foreground #2E8B57 :slant italic))) (epe-colorize-with-face ] (quote epe-venv-face)))) (propertize  $  (quote face) (quote font-lock-constant-face))) |
+
+** Shell-pop 
+#+BEGIN_SRC emacs-lisp
+  (use-package shell-pop
+    :ensure t
+    :bind (("C-t" . shell-pop))
+    :config
+    (setq shell-pop-shell-type (quote ("ehell" "eshell" (lambda nil (eshell)))))
+    (setq shell-pop-term-shell "eshell")
+    h  ;; need to do this manually or not picked up by `shell-pop'
+    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
+#+END_SRC
+
+#+RESULTS:
+: shell-pop
+
+* Utilities
+** Load other files
+#+BEGIN_SRC emacs-lisp
+  (defun load-if-exists (f)
+    "load the elisp file only if it exists and is readable"
+    (if (file-readable-p f)
+        (load-file f)))
+
+  ;(load-if-exists "~/sample")
+#+END_SRC
+
+#+RESULTS:
+: load-if-exists
+** Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired+
     :ensure t
@@ -411,7 +1087,130 @@
 #+RESULTS:
 : t
 
-* Stuff to refile
+** Hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra 
+    :ensure hydra
+    :init 
+    (global-set-key
+     (kbd "C-x t")
+     (defhydra toggle (:color blue)
+       "toggle"
+       ("a" abbrev-mode "abbrev")
+       ("s" flyspell-mode "flyspell")
+       ("d" toggle-debug-on-error "debug")
+       ("c" fci-mode "fCi")
+       ("f" auto-fill-mode "fill")
+       ("t" toggle-truncate-lines "truncate")
+       ("w" whitespace-mode "whitespace")
+       ("q" nil "cancel")))
+    (global-set-key
+     (kbd "C-x j")
+     (defhydra gotoline 
+       ( :pre (linum-mode 1)
+              :post (linum-mode -1))
+       "goto"
+       ("t" (lambda () (interactive)(move-to-window-line-top-bottom 0)) "top")
+       ("b" (lambda () (interactive)(move-to-window-line-top-bottom -1)) "bottom")
+       ("m" (lambda () (interactive)(move-to-window-line-top-bottom)) "middle")
+       ("e" (lambda () (interactive)(end-of-buffer)) "end")
+       ("c" recenter-top-bottom "recenter")
+       ("n" next-line "down")
+       ("p" (lambda () (interactive) (forward-line -1))  "up")
+       ("g" goto-line "goto-line")
+       ))
+    (global-set-key
+     (kbd "C-c t")
+     (defhydra hydra-global-org (:color blue)
+       "Org"
+       ("t" org-timer-start "Start Timer")
+       ("s" org-timer-stop "Stop Timer")
+       ("r" org-timer-set-timer "Set Timer") ; This one requires you be in an orgmode doc, as it sets the timer for the header
+       ("p" org-timer "Print Timer") ; output timer value to buffer
+       ("w" (org-clock-in '(4)) "Clock-In") ; used with (org-clock-persistence-insinuate) (setq org-clock-persist t)
+       ("o" org-clock-out "Clock-Out") ; you might also want (setq org-log-note-clock-out t)
+       ("j" org-clock-goto "Clock Goto") ; global visit the clocked task
+       ("c" org-capture "Capture") ; Don't forget to define the captures you want http://orgmode.org/manual/Capture.html
+       ("l" (or )rg-capture-goto-last-stored "Last Capture"))
+
+     ))
+#+END_SRC
+
+#+RESULTS:
+
+** Which key
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :ensure t 
+    :config
+    (which-key-mode))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** WGrep
+#+BEGIN_SRC emacs-lisp
+  (use-package wgrep
+    :ensure t
+    )
+#+END_SRC
+
+#+RESULTS:
+
+** Try
+#+BEGIN_SRC emacs-lisp
+  (use-package try
+    :ensure t)
+#+END_SRC
+
+#+RESULTS:
+
+** Prodigy
+#+BEGIN_SRC emacs-lisp
+  (use-package prodigy
+    :ensure t
+    :config
+    (load-if-exists "~/shared/prodigy-services.el")
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Regex
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package pcre2el
+  ;;   :ensure t
+  ;;   :config 
+  ;;   (pcre-mode)
+  ;;   )
+#+END_SRC
+
+#+RESULTS:
+: t
+
+* Misc
+
+** Misc tweaks
+#+BEGIN_SRC emacs-lisp
+  (setq save-interprogram-paste-before-kill t)
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** Revert buffer
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode 1)
+  (setq auto-revert-verbose nil)
+  (global-set-key (kbd "<f5>") 'revert-buffer)
+#+END_SRC
+
+#+RESULTS:
+: revert-buffer
+
+** Stuff to refile
 #+BEGIN_SRC emacs-lisp
 
   (global-set-key (kbd "\e\ei")
@@ -558,783 +1357,4 @@
 #+RESULTS:
 : t
 
-* Load other files
-#+BEGIN_SRC emacs-lisp
-  (defun load-if-exists (f)
-    "load the elisp file only if it exists and is readable"
-    (if (file-readable-p f)
-        (load-file f)))
-
-  ;(load-if-exists "~/sample")
-#+END_SRC
-
-#+RESULTS:
-: load-if-exists
-
-* Hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra 
-    :ensure hydra
-    :init 
-    (global-set-key
-     (kbd "C-x t")
-     (defhydra toggle (:color blue)
-       "toggle"
-       ("a" abbrev-mode "abbrev")
-       ("s" flyspell-mode "flyspell")
-       ("d" toggle-debug-on-error "debug")
-       ("c" fci-mode "fCi")
-       ("f" auto-fill-mode "fill")
-       ("t" toggle-truncate-lines "truncate")
-       ("w" whitespace-mode "whitespace")
-       ("q" nil "cancel")))
-    (global-set-key
-     (kbd "C-x j")
-     (defhydra gotoline 
-       ( :pre (linum-mode 1)
-              :post (linum-mode -1))
-       "goto"
-       ("t" (lambda () (interactive)(move-to-window-line-top-bottom 0)) "top")
-       ("b" (lambda () (interactive)(move-to-window-line-top-bottom -1)) "bottom")
-       ("m" (lambda () (interactive)(move-to-window-line-top-bottom)) "middle")
-       ("e" (lambda () (interactive)(end-of-buffer)) "end")
-       ("c" recenter-top-bottom "recenter")
-       ("n" next-line "down")
-       ("p" (lambda () (interactive) (forward-line -1))  "up")
-       ("g" goto-line "goto-line")
-       ))
-    (global-set-key
-     (kbd "C-c t")
-     (defhydra hydra-global-org (:color blue)
-       "Org"
-       ("t" org-timer-start "Start Timer")
-       ("s" org-timer-stop "Stop Timer")
-       ("r" org-timer-set-timer "Set Timer") ; This one requires you be in an orgmode doc, as it sets the timer for the header
-       ("p" org-timer "Print Timer") ; output timer value to buffer
-       ("w" (org-clock-in '(4)) "Clock-In") ; used with (org-clock-persistence-insinuate) (setq org-clock-persist t)
-       ("o" org-clock-out "Clock-Out") ; you might also want (setq org-log-note-clock-out t)
-       ("j" org-clock-goto "Clock Goto") ; global visit the clocked task
-       ("c" org-capture "Capture") ; Don't forget to define the captures you want http://orgmode.org/manual/Capture.html
-       ("l" (or )rg-capture-goto-last-stored "Last Capture"))
-
-     ))
-#+END_SRC
-
-#+RESULTS:
-
-* Testing stuff
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'org-mode-hook 'turn-on-flyspell)
-  (add-hook 'org-mode-hook 'turn-on-auto-fill)
-#+END_SRC
-
-#+RESULTS:
-| turn-on-auto-fill | turn-on-flyspell | er/add-org-mode-expansions | (lambda nil (org-bullets-mode 1)) | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-ac/setup-current-buffer |
-
-* Better shell
-#+BEGIN_SRC emacs-lisp :tangle no
-  (use-package better-shell
-    :ensure t
-    :bind (("C-'" . better-shell-shell)
-           ("C-;" . better-shell-remote-open)))
-#+END_SRC
-
-#+RESULTS:
-: better-shell-remote-open
-
-* eshell stuff
-#+BEGIN_SRC emacs-lisp
-  (use-package shell-switcher
-    :ensure t
-    :config 
-    (setq shell-switcher-mode t)
-    :bind (("C-'" . shell-switcher-switch-buffer)
-           ("C-x 4 '" . shell-switcher-switch-buffer-other-window)
-           ("C-M-'" . shell-switcher-new-shell)))
-
-  ;; Visual commands
-  (setq eshell-visual-commands '("vi" "screen" "top" "less" "more" "lynx"
-                                 "ncftp" "pine" "tin" "trn" "elm" "vim"
-                                 "nmtui" "alsamixer" "htop" "el" "elinks"
-                                 ))
-  (setq eshell-visual-subcommands '(("git" "log" "diff" "show")))
-  (setq eshell-list-files-after-cd t)
-  (defun eshell-clear-buffer ()
-    "Clear terminal"
-    (interactive)
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (eshell-send-input)))
-  (add-hook 'eshell-mode-hook
-            '(lambda()
-               (local-set-key (kbd "C-l") 'eshell-clear-buffer)))
-
-  (defun eshell/magit ()
-    "Function to open magit-status for the current directory"
-    (interactive)
-    (magit-status default-directory)
-    nil)
-
-  ;; smart display stuff
-  (require 'eshell)
-  (require 'em-smart)
-  (setq eshell-where-to-jump 'begin)
-  (setq eshell-review-quick-commands nil)
-  (setq eshell-smart-space-goes-to-end t)
-
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (eshell-smart-initialize)))
-  ;; eshell here
-  (defun eshell-here ()
-    "Opens up a new shell in the directory associated with the
-  current buffer's file. The eshell is renamed to match that
-  directory to make multiple eshell windows easier."
-    (interactive)
-    (let* ((parent (if (buffer-file-name)
-                       (file-name-directory (buffer-file-name))
-                     default-directory))
-           (height (/ (window-total-height) 3))
-           (name   (car (last (split-string parent "/" t)))))
-      (split-window-vertically (- height))
-      (other-window 1)
-      (eshell "new")
-      (rename-buffer (concat "*eshell: " name "*"))
-
-      (insert (concat "ls"))
-      (eshell-send-input)))
-
-  (global-set-key (kbd "C-!") 'eshell-here)
-
-#+END_SRC
-
-#+RESULTS:
-: eshell-here
-
-Eshell prompt
-
-#+BEGIN_SRC emacs-lisp
-  (defcustom dotemacs-eshell/prompt-git-info
-    t
-    "Turns on additional git information in the prompt."
-    :group 'dotemacs-eshell
-    :type 'boolean)
-
-  ;; (epe-colorize-with-face "abc" 'font-lock-comment-face)
-  (defmacro epe-colorize-with-face (str face)
-    `(propertize ,str 'face ,face))
-
-  (defface epe-venv-face
-    '((t (:inherit font-lock-comment-face)))
-    "Face of python virtual environment info in prompt."
-    :group 'epe)
-
-  (setq eshell-prompt-function
-        (lambda ()
-          (concat (propertize (abbreviate-file-name (eshell/pwd)) 'face 'eshell-prompt)
-                  (when (and dotemacs-eshell/prompt-git-info
-                             (fboundp #'vc-git-branches))
-                    (let ((branch (car (vc-git-branches))))
-                      (when branch
-                        (concat
-                         (propertize " [" 'face 'font-lock-keyword-face)
-                         (propertize branch 'face 'font-lock-function-name-face)
-                         (let* ((status (shell-command-to-string "git status --porcelain"))
-                                (parts (split-string status "\n" t " "))
-                                (states (mapcar #'string-to-char parts))
-                                (added (count-if (lambda (char) (= char ?A)) states))
-                                (modified (count-if (lambda (char) (= char ?M)) states))
-                                (deleted (count-if (lambda (char) (= char ?D)) states)))
-                           (when (> (+ added modified deleted) 0)
-                             (propertize (format " +%d ~%d -%d" added modified deleted) 'face 'font-lock-comment-face)))
-                         (propertize "]" 'face 'font-lock-keyword-face)))))
-                  (when (and (boundp #'venv-current-name) venv-current-name)
-                    (concat 
-                     (epe-colorize-with-face " [" 'epe-venv-face) 
-                     (propertize venv-current-name 'face `(:foreground "#2E8B57" :slant italic))
-                     (epe-colorize-with-face "]" 'epe-venv-face))) 
-                  (propertize " $ " 'face 'font-lock-constant-face))))
-#+END_SRC
-
-#+RESULTS:
-| lambda | nil | (concat (propertize (abbreviate-file-name (eshell/pwd)) (quote face) (quote eshell-prompt)) (when (and dotemacs-eshell/prompt-git-info (fboundp (function vc-git-branches))) (let ((branch (car (vc-git-branches)))) (when branch (concat (propertize  [ (quote face) (quote font-lock-keyword-face)) (propertize branch (quote face) (quote font-lock-function-name-face)) (let* ((status (shell-command-to-string git status --porcelain)) (parts (split-string status \n t  )) (states (mapcar (function string-to-char) parts)) (added (count-if (lambda (char) (= char 65)) states)) (modified (count-if (lambda (char) (= char 77)) states)) (deleted (count-if (lambda (char) (= char 68)) states))) (when (> (+ added modified deleted) 0) (propertize (format  +%d ~%d -%d added modified deleted) (quote face) (quote font-lock-comment-face)))) (propertize ] (quote face) (quote font-lock-keyword-face)))))) (when (and (boundp (function venv-current-name)) venv-current-name) (concat (epe-colorize-with-face  [ (quote epe-venv-face)) (propertize venv-current-name (quote face) (` (:foreground #2E8B57 :slant italic))) (epe-colorize-with-face ] (quote epe-venv-face)))) (propertize  $  (quote face) (quote font-lock-constant-face))) |
-
-* C++
-#+BEGIN_SRC emacs-lisp
-  (use-package ggtags
-    :ensure t
-    :config 
-    (add-hook 'c-mode-common-hook
-              (lambda ()
-                (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                  (ggtags-mode 1))))
-    )
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Dumb jump
-#+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump
-    :bind (("M-g o" . dumb-jump-go-other-window)
-           ("M-g j" . dumb-jump-go)
-           ("M-g x" . dumb-jump-go-prefer-external)
-           ("M-g z" . dumb-jump-go-prefer-external-other-window))
-    :config 
-    ;; (setq dumb-jump-selector 'ivy) ;; (setq dumb-jump-selector 'helm)
-    :init
-    (dumb-jump-mode)
-    :ensure
-    )
-#+END_SRC
-
-#+RESULTS:
-: dumb-jump-go-prefer-external-other-window
-
-* Origami folding
-#+BEGIN_SRC emacs-lisp
-  (use-package origami
-    :ensure t)
-#+END_SRC
-
-#+RESULTS:
-
-* IBuffer
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (setq ibuffer-saved-filter-groups
-        (quote (("default"
-                 ("dired" (mode . dired-mode))
-                 ("org" (name . "^.*org$"))
-                 
-                 ("web" (or (mode . web-mode) (mode . js2-mode)))
-                 ("shell" (or (mode . eshell-mode) (mode . shell-mode)))
-                 ("programming" (or
-                                 (mode . python-mode)
-                                 (mode . c++-mode)))
-                 ("emacs" (or
-                           (name . "^\\*scratch\\*$")
-                           (name . "^\\*Messages\\*$")))
-                 ))))
-  (add-hook 'ibuffer-mode-hook
-            (lambda ()
-              (ibuffer-auto-mode 1)
-              (ibuffer-switch-to-saved-filter-groups "default")))
-
-  ;; don't show these
-                                          ;(add-to-list 'ibuffer-never-show-predicates "zowie")
-  ;; Don't show filter groups if there are no buffers in that group
-  (setq ibuffer-show-empty-filter-groups nil)
-
-  ;; Don't ask for confirmation to delete marked buffers
-  (setq ibuffer-expert t)
-
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Prodigy
-#+BEGIN_SRC emacs-lisp
-  (use-package prodigy
-    :ensure t
-    :config
-    (load-if-exists "~/shared/prodigy-services.el")
-    )
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Treemacs
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-    :ensure t
-    :defer t
-    :config
-    (progn
-      (setq treemacs-follow-after-init          t
-            treemacs-width                      35
-            treemacs-indentation                2
-            treemacs-git-integration            t
-            treemacs-collapse-dirs              3
-            treemacs-silent-refresh             nil
-            treemacs-change-root-without-asking nil
-            treemacs-sorting                    'alphabetic-desc
-            treemacs-show-hidden-files          t
-            treemacs-never-persist              nil
-            treemacs-is-never-other-window      nil
-            treemacs-goto-tag-strategy          'refetch-index)
-      (treemacs-follow-mode t)
-      (treemacs-filewatch-mode t))
-    :bind
-    (:map global-map
-          ([f8]        . treemacs-toggle)
-          ([f9]        . treemacs-projectile-toggle)
-          ("<C-M-tab>" . treemacs-toggle)
-          ("M-0"       . treemacs-select-window)
-          ("C-c 1"     . treemacs-delete-other-windows)
-          ))
-  (use-package treemacs-projectile
-    :defer t
-    :ensure t
-    :config
-    (setq treemacs-header-function #'treemacs-projectile-create-header)
-    )
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Misc
-#+BEGIN_SRC emacs-lisp
-  (defun z/swap-windows ()
-    ""
-    (interactive)
-    (ace-swap-window)
-    (aw-flip-window)
-    )
-#+END_SRC
-
-#+RESULTS:
-: z/swap-windows
-
-* Haskell 
-#+BEGIN_SRC emacs-lisp
-  (use-package haskell-mode
-    :ensure t
-    :config
-    (require 'haskell-interactive-mode)
-    (require 'haskell-process)
-    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-    )
-
-  (use-package dante
-    :ensure t
-    :after haskell-mode
-    :commands 'dante-mode
-    :init
-    (add-hook 'haskell-mode-hook 'dante-mode)
-    (add-hook 'haskell-mode-hook 'flycheck-mode))
-
-  (add-hook 'dante-mode-hook
-            '(lambda () (flycheck-add-next-checker 'haskell-dante
-                                                   '(warning . haskell-hlint))))
-#+END_SRC
-
-#+RESULTS:
-| lambda | nil | (flycheck-add-next-checker (quote haskell-dante) (quote (warning . haskell-hlint))) |
-
-* Personal keymap
-#+BEGIN_SRC emacs-lisp
-  ;; unset C- and M- digit keys
-  (dotimes (n 10)
-    (global-unset-key (kbd (format "C-%d" n)))
-    (global-unset-key (kbd (format "M-%d" n)))
-    )
-
-  (defun org-agenda-show-agenda-and-todo (&optional arg)
-    (interactive "P")
-    (org-agenda arg "c")
-    (org-agenda-fortnight-view))
-
-  ;; set up my own map
-  (define-prefix-command 'z-map)
-  (global-set-key (kbd "C-1") 'z-map)
-
-  (define-key z-map (kbd "1") 'org-global-cycle)
-  (define-key z-map (kbd "a") 'org-agenda-show-agenda-and-todo)
-  (define-key z-map (kbd "g") 'counsel-ag)
-
-  (define-key z-map (kbd "s") 'flyspell-correct-word-before-point)
-  (define-key z-map (kbd "i") (lambda () (interactive) (find-file "~/org/i.org")))
-  (define-key z-map (kbd "f") 'origami-toggle-node)
-  (define-key z-map (kbd "w") 'z/swap-windows)
-#+END_SRC
-
-#+RESULTS:
-: z/swap-windows
-
-* Shell-pop 
-#+BEGIN_SRC emacs-lisp
-  (use-package shell-pop
-    :ensure t
-    :bind (("C-t" . shell-pop))
-    :config
-    (setq shell-pop-shell-type (quote ("ehell" "eshell" (lambda nil (eshell)))))
-    (setq shell-pop-term-shell "eshell")
-    h  ;; need to do this manually or not picked up by `shell-pop'
-    (shell-pop--set-shell-type 'shell-pop-shell-type shell-pop-shell-type))
-#+END_SRC
-
-#+RESULTS:
-: shell-pop
-
-* WGrep
-#+BEGIN_SRC emacs-lisp
-  (use-package wgrep
-    :ensure t
-    )
-#+END_SRC
-
-#+RESULTS:
-
-* Regex
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package pcre2el
-  ;;   :ensure t
-  ;;   :config 
-  ;;   (pcre-mode)
-  ;;   )
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Keychord and jump-char
-#+BEGIN_SRC emacs-lisp
-  (use-package key-chord
-    :ensure t
-    :defer nil
-    :config (key-chord-mode 1))
-
-  (use-package jump-char
-    :ensure t
-    :after (key-chord)
-    :commands (jump-char-forward jump-char-backward)
-    :init
-    ;; (key-chord-define-global "fj" 'jump-char-forward)
-    ;; (key-chord-define-global "fk" 'jump-char-backward)
-    (global-set-key (kbd "M-m") 'jump-char-forward)
-    (global-set-key (kbd "M-M") 'jump-char-backward))
-#+END_SRC
-
-#+RESULTS:
-: jump-char-backward
-
-* Framemove
-#+BEGIN_SRC emacs-lisp
-  (use-package framemove
-    :ensure t
-    :config
-    (framemove-default-keybindings)
-    )
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Multiple cursors
-#+BEGIN_SRC emacs-lisp
-  (use-package multiple-cursors
-    :ensure t
-    :bind (("C-S-c C-S-c" . mc/edit-lines)
-           ("C->" . mc/mark-next-like-this)
-           ("C-<" . mc/mark-previous-like-this)
-           ("C-c C-<" . mc/mark-all-like-this)))
-
-#+END_SRC
-
-#+RESULTS:
-: mc/mark-all-like-this
-
-* Paredit
-#+BEGIN_SRC emacs-lisp
-  (use-package paredit
-    :ensure t
-    :defer t
-    :init (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-    (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-    (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-    (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-    (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode))
-#+END_SRC
-
-#+RESULTS:
-| enable-paredit-mode |
-* Smart-forward
-#+BEGIN_SRC emacs-lisp
-  (use-package smart-forward
-    :ensure t
-    :bind (("M-<up>" . smart-up)
-           ("M-<down>" . smart-down)
-           ("M-<left>" . smart-backward)
-           ("M-<right>" . smart-forward)
-           ))
-#+END_SRC
-
-#+RESULTS:
-: smart-forward
-
-* Change-inner
-#+BEGIN_SRC emacs-lisp
-  (use-package change-inner
-    :ensure t
-    :bind (("M-i" . change-inner)
-           ("M-o" . change-outer)
-           ))
-#+END_SRC
-
-#+RESULTS:
-: change-outer
-
-* Move-text
-#+BEGIN_SRC emacs-lisp
-  (use-package move-text
-    :ensure t
-    :bind (("<C-S-down>" . move-text-down)
-           ("<C-S-up>" . move-text-up)))
-#+END_SRC
-
-#+RESULTS:
-: move-text-up
-
-* Copy without selection
-#+BEGIN_SRC emacs-lisp
-  (defun get-point (symbol &optional arg)
-    "get the point"
-    (funcall symbol arg)
-    (point)
-    )
-
-  (defun copy-thing (begin-of-thing end-of-thing &optional arg)
-    "copy thing between beg & end into kill ring"
-    (save-excursion
-      (let ((beg (get-point begin-of-thing 1))
-            (end (get-point end-of-thing arg)))
-        (copy-region-as-kill beg end)))
-    )
-
-  (defun paste-to-mark(&optional arg)
-    "Paste things to mark, or to the prompt in shell-mode"
-    (let ((pasteMe 
-           (lambda()
-             (if (string= "shell-mode" major-mode)
-                 (progn (comint-next-prompt 25535) (yank))
-               (progn (goto-char (mark)) (yank) )))))
-      (if arg
-          (if (= arg 1)
-              nil
-            (funcall pasteMe))
-        (funcall pasteMe))
-      ))
-
-  (defun copy-word (&optional arg)
-    "Copy words at point into kill-ring"
-    (interactive "P")
-    (copy-thing 'backward-word 'forward-word arg)
-    ;;(paste-to-mark arg)
-    )
-
-  (defun copy-line (&optional arg)
-    "Save current line into Kill-Ring without mark the line "
-    (interactive "P")
-    (copy-thing 'beginning-of-line 'end-of-line arg)
-    ;;(paste-to-mark arg)
-    )
-
-  (defun copy-paragraph (&optional arg)
-    "Copy paragraphes at point"
-    (interactive "P")
-    (copy-thing 'backward-paragraph 'forward-paragraph arg)
-    ;;(paste-to-mark arg)
-    )
-
-  (defun beginning-of-string(&optional arg)
-    "  "
-    (re-search-backward "[ \t]" (line-beginning-position) 3 1)
-    (if (looking-at "[\t ]")  (goto-char (+ (point) 1)) )
-    )
-  (defun end-of-string(&optional arg)
-    " "
-    (re-search-forward "[ \t]" (line-end-position) 3 arg)
-    (if (looking-back "[\t ]") (goto-char (- (point) 1)) )
-    )
-
-  (defun thing-copy-string-to-mark(&optional arg)
-    " Try to copy a string and paste it to the mark
-       When used in shell-mode, it will paste string on shell prompt by default "
-    (interactive "P")
-    (copy-thing 'beginning-of-string 'end-of-string arg)
-    (paste-to-mark arg)
-    )
-
-  (defun beginning-of-parenthesis(&optional arg)
-    "  "
-    (re-search-backward "[[<(?\"]" (line-beginning-position) 3 1)
-    (if (looking-at "[[<(?\"]")  (goto-char (+ (point) 1)) )
-    )
-  (defun end-of-parenthesis(&optional arg)
-    " "
-    (re-search-forward "[]>)?\"]" (line-end-position) 3 arg)
-    (if (looking-back "[]>)?\"]") (goto-char (- (point) 1)) )
-    )
-
-  (defun thing-copy-parenthesis-to-mark(&optional arg)
-    " Try to copy a parenthesis and paste it to the mark
-       When used in shell-mode, it will paste parenthesis on shell prompt by default "
-    (interactive "P")
-    (copy-thing 'beginning-of-parenthesis 'end-of-parenthesis arg)
-    (paste-to-mark arg)
-    )
-
-  (global-set-key (kbd "C-c w")         (quote copy-word))
-  (global-set-key (kbd "C-c l")         (quote copy-line))
-  (global-set-key (kbd "C-c p")         (quote copy-paragraph))
-  ;;(global-set-key (kbd "C-c s")         (quote thing-copy-string-to-mark))
-  (global-set-key (kbd "C-c a")         (quote thing-copy-parenthesis-to-mark))
-#+END_SRC
-
-#+RESULTS:
-: thing-copy-parenthesis-to-mark
-
-* String-edit
-string-edit-at-point
-#+BEGIN_SRC emacs-lisp
-  (use-package string-edit
-    :ensure t)
-#+END_SRC
-
-#+RESULTS:
-
-* Visual-regexp and visual-regexp-steroids
-#+BEGIN_SRC emacs-lisp
-  (use-package visual-regexp
-    :ensure t
-    :defer nil)
-
-  (use-package visual-regexp-steroids
-    :ensure t
-    :defer nil
-    :config (define-key global-map (kbd "C-c r") 'vr/replace)
-    (define-key global-map (kbd "C-c q") 'vr/query-replace)
-    (define-key global-map (kbd "C-c m") 'vr/mc-mark)
-    (define-key esc-map (kbd "C-r") 'vr/isearch-backward)
-    (define-key esc-map (kbd "C-s") 'vr/isearch-forward))
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* Mwim
-Move Where I mean
-#+BEGIN_SRC emacs-lisp
-  (use-package mwim
-    :ensure t
-    :defer nil
-    :init
-    (global-set-key (kbd "C-a") 'mwim-beginning-of-line-or-code)
-    (global-set-key (kbd "C-e") 'mwim-end-of-line-or-code))
-#+END_SRC
-
-#+RESULTS:
-: mwim-end-of-line-or-code
-
-* Recent files
-#+BEGIN_SRC emacs-lisp
-  (recentf-mode 1)
-  (setq recentf-max-menu-items 25)
-  (global-set-key "\C-x\ \C-r" 'recentf-open-files)
-#+END_SRC
-
-#+RESULTS:
-P: recentf-open-files
-
-* Ido-imenu-push-mark
-#+BEGIN_SRC emacs-lisp
-  (defun ido-imenu ()
-    "Update the imenu index and then use ido to select a symbol to navigate to.
-  Symbols matching the text at point are put first in the completion list."
-    (interactive)
-    (imenu--make-index-alist)
-    (let ((name-and-pos '())
-          (symbol-names '()))
-      (flet ((addsymbols (symbol-list)
-                         (when (listp symbol-list)
-                           (dolist (symbol symbol-list)
-                             (let ((name nil) (position nil))
-                               (cond
-                                ((and (listp symbol) (imenu--subalist-p symbol))
-                                 (addsymbols symbol))
-
-                                ((listp symbol)
-                                 (setq name (car symbol))
-                                 (setq position (cdr symbol)))
-
-                                ((stringp symbol)
-                                 (setq name symbol)
-                                 (setq position (get-text-property 1 'org-imenu-marker symbol))))
-
-                               (unless (or (null position) (null name))
-                                 (add-to-list 'symbol-names name)
-                                 (add-to-list 'name-and-pos (cons name position))))))))
-        (addsymbols imenu--index-alist))
-      ;; If there are matching symbols at point, put them at the beginning of `symbol-names'.
-      (let ((symbol-at-point (thing-at-point 'symbol)))
-        (when symbol-at-point
-          (let* ((regexp (concat (regexp-quote symbol-at-point) "$"))
-                 (matching-symbols (delq nil (mapcar (lambda (symbol)
-                                                       (if (string-match regexp symbol) symbol))
-                                                     symbol-names))))
-            (when matching-symbols
-              (sort matching-symbols (lambda (a b) (> (length a) (length b))))
-              (mapc (lambda (symbol) (setq symbol-names (cons symbol (delete symbol symbol-names))))
-                    matching-symbols)))))
-      (let* ((selected-symbol (ido-completing-read "Symbol? " symbol-names))
-             (position (cdr (assoc selected-symbol name-and-pos))))
-        (goto-char position))))
-
-  ;; Push mark when using ido-imenu
-
-  (defvar push-mark-before-goto-char nil)
-
-  (defadvice goto-char (before push-mark-first activate)
-    (when push-mark-before-goto-char
-      (push-mark)))
-
-  (defun ido-imenu-push-mark ()
-    (interactive)
-    (let ((push-mark-before-goto-char t))
-      (ido-imenu)))
-
-  (global-set-key (kbd "C-x C-i") 'ido-imenu-push-mark)
-#+END_SRC
-
-#+RESULTS:
-: ido-imenu-push-mark
-
-* Move more quickly
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-S-n") (lambda () (interactive) (ignore-errors (next-line 5))))
-  (global-set-key (kbd "C-S-p") (lambda () (interactive)  (ignore-errors (previous-line 5))))
-  (global-set-key (kbd "C-S-f") (lambda () (interactive)  (ignore-errors (forward-char 5))))
-  (global-set-key (kbd "C-S-b") (lambda () (interactive)  (ignore-errors (backward-char 5))))
-#+END_SRC
-
-#+RESULTS:
-| lambda | nil | (interactive) | (ignore-errors (backward-char 5)) |
-
-* Back button
-#+BEGIN_SRC emacs-lisp
-  (use-package back-button
-    :ensure t
-    :config (back-button-mode 1)
-    )
-#+END_SRC
-
-#+RESULTS:
-: t
-* Mark-down mode
-#+BEGIN_SRC emacs-lisp
-  (use-package markdown-mode
-    :ensure t
-    :commands (markdown-mode gfm-mode)
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))
-#+END_SRC
-
-#+RESULTS:
 
