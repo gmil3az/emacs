@@ -26,6 +26,18 @@
 #+RESULTS:
 : t
 
+** Font scaling
+#+BEGIN_SRC emacs-lisp
+  (use-package default-text-scale
+    :ensure t
+    :config
+    (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
+    (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
+#+END_SRC
+
+#+RESULTS:
+: t
+
 ** Beacon
 #+BEGIN_SRC emacs-lisp
   (use-package beacon
@@ -222,6 +234,69 @@ string-edit-at-point
 
 #+RESULTS:
 | enable-paredit-mode |
+
+** Smartparens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :config
+    (use-package smartparens-config)
+    (use-package smartparens-html)
+    (use-package smartparens-python)
+    (use-package smartparens-latex)
+    (smartparens-global-mode t)
+    (show-smartparens-global-mode t)
+    :bind
+    ( ("C-<down>" . sp-down-sexp)
+      ("C-<up>"   . sp-up-sexp)
+      ("M-<down>" . sp-backward-down-sexp)
+      ("M-<up>"   . sp-backward-up-sexp)
+      ("C-M-a" . sp-beginning-of-sexp)
+      ("C-M-e" . sp-end-of-sexp)
+
+      ("C-M-f" . sp-forward-sexp)
+      ("C-M-b" . sp-backward-sexp)
+
+      ("C-M-n" . sp-next-sexp)
+      ("C-M-p" . sp-previous-sexp)
+
+      ("C-S-f" . sp-forward-symbol)
+      ("C-S-b" . sp-backward-symbol)
+
+      ("C-<right>" . sp-forward-slurp-sexp)
+      ("M-<right>" . sp-forward-barf-sexp)
+      ("C-<left>"  . sp-backward-slurp-sexp)
+      ("M-<left>"  . sp-backward-barf-sexp)
+
+      ("C-M-t" . sp-transpose-sexp)
+      ("C-M-k" . sp-kill-sexp)
+      ("C-k"   . sp-kill-hybrid-sexp)
+      ("M-k"   . sp-backward-kill-sexp)
+      ("C-M-w" . sp-copy-sexp)
+
+      ("C-M-d" . delete-sexp)
+
+      ("M-<backspace>" . backward-kill-word)
+      ("C-<backspace>" . sp-backward-kill-word)
+      ([remap sp-backward-kill-word] . backward-kill-word)
+
+      ("M-[" . sp-backward-unwrap-sexp)
+      ("M-]" . sp-unwrap-sexp)
+
+      ("C-x C-t" . sp-transpose-hybrid-sexp)
+
+      ("C-c ("  . wrap-with-parens)
+      ("C-c ["  . wrap-with-brackets)
+      ("C-c {"  . wrap-with-braces)
+      ("C-c '"  . wrap-with-single-quotes)
+      ("C-c \"" . wrap-with-double-quotes)
+      ("C-c _"  . wrap-with-underscores)
+      ("C-c `"  . wrap-with-back-quotes)
+      ))
+#+END_SRC
+
+#+RESULTS:
+: wrap-with-back-quotes
 
 ** Undo tree
 #+BEGIN_SRC emacs-lisp
@@ -564,6 +639,23 @@ Move Where I mean
 #+RESULTS:
 : t
 
+** Projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-global-mode)
+    (setq projectile-completion-system 'ivy))
+
+  (use-package counsel-projectile
+    :ensure t
+    :config
+  ;(counsel-projectile-on)
+    )
+#+END_SRC
+
+#+RESULTS:
+
 ** Treemacs
 #+BEGIN_SRC emacs-lisp
   (use-package treemacs
@@ -646,10 +738,19 @@ P: recentf-open-files
   (define-key z-map (kbd "i") (lambda () (interactive) (find-file "~/org/i.org")))
   (define-key z-map (kbd "f") 'origami-toggle-node)
   (define-key z-map (kbd "w") 'z/swap-windows)
+
+  (global-set-key (kbd "\e\ei")
+                  (lambda () (interactive) (find-file "~/org/i.org")))
+
+  (global-set-key (kbd "\e\el")
+                  (lambda () (interactive) (find-file "~/org/links.org")))
+
+  (global-set-key (kbd "\e\ec")
+                  (lambda () (interactive) (find-file "~/.emacs.d/myinit.org")))
 #+END_SRC
 
 #+RESULTS:
-: z/swap-windows
+| lambda | nil | (interactive) | (find-file ~/.emacs.d/myinit.org) |
 
 * Code completion and Templates
 
@@ -818,6 +919,34 @@ P: recentf-open-files
 #+RESULTS:
 | lambda | nil | (flycheck-add-next-checker (quote haskell-dante) (quote (warning . haskell-hlint))) |
 
+** Cider
+#+BEGIN_SRC emacs-lisp
+  (use-package cider
+    :ensure t 
+    :config
+  ; this is to make cider-jack-in-cljs work
+    (setq cider-cljs-lein-repl
+          "(do (require 'figwheel-sidecar.repl-api)
+             (figwheel-sidecar.repl-api/start-figwheel!)
+             (figwheel-sidecar.repl-api/cljs-repl))")
+    )
+
+  (use-package ac-cider
+    :ensure t
+    :config
+    (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+    (add-hook 'cider-mode-hook 'ac-cider-setup)
+    (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+    (eval-after-load "auto-complete"
+      '(progn
+         (add-to-list 'ac-modes 'cider-mode)
+         (add-to-list 'ac-modes 'cider-repl-mode)))
+    )
+#+END_SRC
+
+#+RESULTS:
+: t
+
 ** Mark-down mode
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
@@ -832,6 +961,8 @@ P: recentf-open-files
 #+RESULTS:
 
 * Org mode
+
+** Org
 #+BEGIN_SRC emacs-lisp
   (setenv "BROWSER" "chromium-browser")
 
@@ -917,6 +1048,23 @@ P: recentf-open-files
 
 #+RESULTS:
 | turn-on-auto-fill | turn-on-flyspell | er/add-org-mode-expansions | (lambda nil (org-bullets-mode 1)) | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-ac/setup-current-buffer |
+
+** Org-babel
+#+BEGIN_SRC emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (emacs-lisp . t)
+     (C . t)
+     (js . t)
+     (ditaa . t)
+     (dot . t)
+     (org . t)
+     (latex . t )
+     ))
+#+END_SRC
+
+#+RESULTS:
 
 * Shell
 
@@ -1063,6 +1211,27 @@ Eshell prompt
 #+RESULTS:
 : shell-pop
 
+* Git
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :init
+    (progn
+      (bind-key "C-x g" 'magit-status)
+      ))
+
+  (use-package git-gutter
+    :ensure t
+    :init
+    (global-git-gutter-mode +1))
+
+  (use-package git-timemachine
+    :ensure t
+    )
+#+END_SRC
+
+#+RESULTS:
+
 * Utilities
 ** Load other files
 #+BEGIN_SRC emacs-lisp
@@ -1171,12 +1340,11 @@ Eshell prompt
   (use-package prodigy
     :ensure t
     :config
-    (load-if-exists "~/shared/prodigy-services.el")
+    ;; (load-if-exists "~/shared/prodigy-services.el")
     )
 #+END_SRC
 
 #+RESULTS:
-: t
 
 ** Regex
 #+BEGIN_SRC emacs-lisp
@@ -1209,152 +1377,4 @@ Eshell prompt
 
 #+RESULTS:
 : revert-buffer
-
-** Stuff to refile
-#+BEGIN_SRC emacs-lisp
-
-  (global-set-key (kbd "\e\ei")
-                  (lambda () (interactive) (find-file "~/org/i.org")))
-
-  (global-set-key (kbd "\e\el")
-                  (lambda () (interactive) (find-file "~/org/links.org")))
-
-  (global-set-key (kbd "\e\ec")
-                  (lambda () (interactive) (find-file "~/.emacs.d/myinit.org")))
-
-  ;; babel stuff
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)
-     (emacs-lisp . t)
-     (C . t)
-     (js . t)
-     (ditaa . t)
-     (dot . t)
-     (org . t)
-     (latex . t )
-     ))
-
-  ;; projectile
-  (use-package projectile
-    :ensure t
-    :config
-    (projectile-global-mode)
-    (setq projectile-completion-system 'ivy))
-
-  (use-package counsel-projectile
-    :ensure t
-    :config
-     ;(counsel-projectile-on)
-    )
-
-  (use-package smartparens
-    :ensure t
-    :config
-    (use-package smartparens-config)
-    (use-package smartparens-html)
-    (use-package smartparens-python)
-    (use-package smartparens-latex)
-    (smartparens-global-mode t)
-    (show-smartparens-global-mode t)
-    :bind
-    ( ("C-<down>" . sp-down-sexp)
-      ("C-<up>"   . sp-up-sexp)
-      ("M-<down>" . sp-backward-down-sexp)
-      ("M-<up>"   . sp-backward-up-sexp)
-      ("C-M-a" . sp-beginning-of-sexp)
-      ("C-M-e" . sp-end-of-sexp)
-
-      ("C-M-f" . sp-forward-sexp)
-      ("C-M-b" . sp-backward-sexp)
-
-      ("C-M-n" . sp-next-sexp)
-      ("C-M-p" . sp-previous-sexp)
-
-      ("C-S-f" . sp-forward-symbol)
-      ("C-S-b" . sp-backward-symbol)
-
-      ("C-<right>" . sp-forward-slurp-sexp)
-      ("M-<right>" . sp-forward-barf-sexp)
-      ("C-<left>"  . sp-backward-slurp-sexp)
-      ("M-<left>"  . sp-backward-barf-sexp)
-
-      ("C-M-t" . sp-transpose-sexp)
-      ("C-M-k" . sp-kill-sexp)
-      ("C-k"   . sp-kill-hybrid-sexp)
-      ("M-k"   . sp-backward-kill-sexp)
-      ("C-M-w" . sp-copy-sexp)
-
-      ("C-M-d" . delete-sexp)
-
-      ("M-<backspace>" . backward-kill-word)
-      ("C-<backspace>" . sp-backward-kill-word)
-      ([remap sp-backward-kill-word] . backward-kill-word)
-
-      ("M-[" . sp-backward-unwrap-sexp)
-      ("M-]" . sp-unwrap-sexp)
-
-      ("C-x C-t" . sp-transpose-hybrid-sexp)
-
-      ("C-c ("  . wrap-with-parens)
-      ("C-c ["  . wrap-with-brackets)
-      ("C-c {"  . wrap-with-braces)
-      ("C-c '"  . wrap-with-single-quotes)
-      ("C-c \"" . wrap-with-double-quotes)
-      ("C-c _"  . wrap-with-underscores)
-      ("C-c `"  . wrap-with-back-quotes)
-      ))
-
-  ;;--------------------------------------------
-
-  (use-package cider
-    :ensure t 
-    :config
-     ; this is to make cider-jack-in-cljs work
-    (setq cider-cljs-lein-repl
-          "(do (require 'figwheel-sidecar.repl-api)
-             (figwheel-sidecar.repl-api/start-figwheel!)
-             (figwheel-sidecar.repl-api/cljs-repl))")
-    )
-
-  (use-package ac-cider
-    :ensure t
-    :config
-    (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-    (add-hook 'cider-mode-hook 'ac-cider-setup)
-    (add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-    (eval-after-load "auto-complete"
-      '(progn
-         (add-to-list 'ac-modes 'cider-mode)
-         (add-to-list 'ac-modes 'cider-repl-mode)))
-    )
-
-  (use-package magit
-    :ensure t
-    :init
-    (progn
-      (bind-key "C-x g" 'magit-status)
-      ))
-
-  (use-package git-gutter
-    :ensure t
-    :init
-    (global-git-gutter-mode +1))
-
-  (use-package git-timemachine
-    :ensure t
-    )
-
-  ;; font scaling
-  (use-package default-text-scale
-    :ensure t
-    :config
-    (global-set-key (kbd "C-M-=") 'default-text-scale-increase)
-    (global-set-key (kbd "C-M--") 'default-text-scale-decrease))
-
-#+END_SRC
-
-#+RESULTS:
-: t
-
 
