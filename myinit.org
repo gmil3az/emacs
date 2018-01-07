@@ -382,6 +382,7 @@ Move Where I mean
 
 #+RESULTS:
 : mwim-end-of-line-or-code
+
 ** Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -404,8 +405,8 @@ Move Where I mean
     :after (key-chord)
     :commands (jump-char-forward jump-char-backward)
     :init
-    ;; (key-chord-define-global "fj" 'jump-char-forward)
-    ;; (key-chord-define-global "fk" 'jump-char-backward)
+    ;; (key-chord-define-global "fk" 'jump-char-forward)
+    ;; (key-chord-define-global "fj" 'jump-char-backward)
     (global-set-key (kbd "M-m") 'jump-char-forward)
     (global-set-key (kbd "M-M") 'jump-char-backward))
 #+END_SRC
@@ -695,7 +696,6 @@ Move Where I mean
 #+END_SRC
 
 #+RESULTS:
-: t
 * Shortcuts
 ** Recent files
 #+BEGIN_SRC emacs-lisp
