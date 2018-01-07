@@ -946,7 +946,7 @@ Move Where I mean
 #+RESULTS:
 : t
 
-** Mark-down mode
+** TODO Mark-down mode
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
     :ensure t
@@ -960,7 +960,6 @@ Move Where I mean
 #+RESULTS:
 
 * Org mode
-
 ** Org
 #+BEGIN_SRC emacs-lisp
   (setenv "BROWSER" "chromium-browser")
@@ -1046,9 +1045,9 @@ Move Where I mean
 #+END_SRC
 
 #+RESULTS:
-| turn-on-auto-fill | turn-on-flyspell | er/add-org-mode-expansions | (lambda nil (org-bullets-mode 1)) | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-ac/setup-current-buffer |
+| turn-on-auto-fill | turn-on-flyspell | (lambda nil (org-bullets-mode 1)) | er/add-org-mode-expansions | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-show-block-all append local] 5] | #[nil \300\301\302\303\304$\207 [org-add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | org-ac/setup-current-buffer |
 
-** Org-babel
+** TODO Org-babel
 #+BEGIN_SRC emacs-lisp
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -1068,7 +1067,7 @@ Move Where I mean
 * Shell
 
 ** Better shell
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
   (use-package better-shell
     :ensure t
     :bind (("C-'" . better-shell-shell)
@@ -1141,7 +1140,6 @@ Move Where I mean
       (eshell-send-input)))
 
   (global-set-key (kbd "C-!") 'eshell-here)
-
 #+END_SRC
 
 #+RESULTS:
