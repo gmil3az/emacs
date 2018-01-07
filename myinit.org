@@ -705,7 +705,7 @@ Move Where I mean
 #+END_SRC
 
 #+RESULTS:
-P: recentf-open-files
+: recentf-open-files
 
 ** Personal keymap
 #+BEGIN_SRC emacs-lisp
@@ -754,7 +754,6 @@ P: recentf-open-files
 | lambda | nil | (interactive) | (find-file ~/.emacs.d/myinit.org) |
 
 * Code completion and Templates
-
 ** Autocomplete
 #+BEGIN_SRC emacs-lisp
   (use-package auto-complete
