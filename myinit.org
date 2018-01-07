@@ -1,7 +1,6 @@
 #+STARTUP: overview
 
 * Appearance
-
 ** Interface tweaks
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
@@ -23,8 +22,8 @@
     :ensure t
     :config
     ;; your preferred main font face here
-    ;; (set-frame-font "Inconsolata-14"
-    ))
+    ;; (set-frame-font "Inconsolata-14")
+    )
 #+END_SRC
 
 #+RESULTS:
