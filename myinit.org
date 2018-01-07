@@ -15,16 +15,19 @@
 
 ** Themes / Modeline
 #+BEGIN_SRC emacs-lisp
-  (use-package color-theme
-    :ensure t)
-
   (use-package zenburn-theme
     :ensure t
     :config (load-theme 'zenburn t))
+
+  (use-package darcula-theme
+    :ensure t
+    :config
+    ;; your preferred main font face here
+    ;; (set-frame-font "Inconsolata-14"
+    ))
 #+END_SRC
 
 #+RESULTS:
-: t
 
 ** Font scaling
 #+BEGIN_SRC emacs-lisp
