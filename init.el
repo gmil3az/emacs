@@ -18,6 +18,7 @@
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#3F3F3F" "#CC9393" "#7F9F7F" "#F0DFAF" "#8CD0D3" "#DC8CC3" "#93E0E3" "#DCDCCC"])
+ '(custom-enabled-themes (quote (zenburn)))
  '(custom-safe-themes
    (quote
     ("5e52ce58f51827619d27131be3e3936593c9c7f9f9f9d6b33227be6331bf9881" "3d5720f488f2ed54dd4e40e9252da2912110948366a16aef503f3e9e7dfe4915" default)))
