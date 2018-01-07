@@ -1065,7 +1065,6 @@ Move Where I mean
 #+RESULTS:
 
 * Shell
-
 ** Better shell
 #+BEGIN_SRC emacs-lisp
   (use-package better-shell
@@ -1242,6 +1241,7 @@ Eshell prompt
 
 #+RESULTS:
 : load-if-exists
+
 ** Dired
 #+BEGIN_SRC emacs-lisp
   (use-package dired+
@@ -1257,7 +1257,8 @@ Eshell prompt
 #+BEGIN_SRC emacs-lisp
   (use-package hydra 
     :ensure hydra
-    :init 
+    :init
+
     (global-set-key
      (kbd "C-x t")
      (defhydra toggle (:color blue)
@@ -1270,6 +1271,7 @@ Eshell prompt
        ("t" toggle-truncate-lines "truncate")
        ("w" whitespace-mode "whitespace")
        ("q" nil "cancel")))
+
     (global-set-key
      (kbd "C-x j")
      (defhydra gotoline 
@@ -1285,6 +1287,7 @@ Eshell prompt
        ("p" (lambda () (interactive) (forward-line -1))  "up")
        ("g" goto-line "goto-line")
        ))
+
     (global-set-key
      (kbd "C-c t")
      (defhydra hydra-global-org (:color blue)
@@ -1298,7 +1301,6 @@ Eshell prompt
        ("j" org-clock-goto "Clock Goto") ; global visit the clocked task
        ("c" org-capture "Capture") ; Don't forget to define the captures you want http://orgmode.org/manual/Capture.html
        ("l" (or )rg-capture-goto-last-stored "Last Capture"))
-
      ))
 #+END_SRC
 
@@ -1334,11 +1336,11 @@ Eshell prompt
 
 ** Prodigy
 #+BEGIN_SRC emacs-lisp
-  (use-package prodigy
-    :ensure t
-    :config
-    ;; (load-if-exists "~/shared/prodigy-services.el")
-    )
+  ;; (use-package prodigy
+  ;;   :ensure t
+  ;;   :config
+  ;;   ;; (load-if-exists "~/shared/prodigy-services.el")
+  ;;   )
 #+END_SRC
 
 #+RESULTS:
@@ -1353,10 +1355,8 @@ Eshell prompt
 #+END_SRC
 
 #+RESULTS:
-: t
 
 * Misc
-
 ** Misc tweaks
 #+BEGIN_SRC emacs-lisp
   (setq save-interprogram-paste-before-kill t)
