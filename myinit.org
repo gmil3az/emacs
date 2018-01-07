@@ -216,7 +216,6 @@ string-edit-at-point
     :ensure t
     :config
     (global-hungry-delete-mode))
-
 #+END_SRC
 
 #+RESULTS:
