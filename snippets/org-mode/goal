@@ -1,0 +1,3 @@
+#+PROPERTY: Goal_ALL Short Medium Long None
+#+COLUMNS: %58ITEM(Details) %TAGS(Context) %7TODO(To Do) %7TODO(To Do) %7Goal(Goal)
+#+TAGS: [ Goal : {G@.+} ]
