@@ -977,6 +977,9 @@ Move Where I mean
    '(org-startup-folded (quote overview))
    '(org-startup-indented t)
    '(org-log-into-drawer t)
+   '(org-modules
+     (quote
+      (org-bbdb org-bibtex org-docview org-gnus org-habit org-info org-irc org-mhe org-rmail org-w3m)))
    )
 
   (setq org-file-apps
