@@ -998,6 +998,7 @@ Move Where I mean
             ))
 
   (global-set-key (kbd "C-c c") 'org-capture)
+  (global-set-key (kbd "<f7>") 'org-id-get-create)
 
   (setq org-agenda-files (list "~/org/cal.org"
                                "~/org/i.org"))
