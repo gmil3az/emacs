@@ -1,0 +1,7 @@
+#+SEQ_TODO: NEXT(n/!) TODO(t@/!) WAITING(w@/!) SOMEDAY(s/!) PROJ(p) | DONE(d@) CANCELLED(c)
+#+TAGS: PHONE(o) COMPUTER(c) GARAGE(g) SHOPPING(s) FAMILY(f) URGENT(u)
+#+COLUMNS: %7TODO(To Do) %32ITEM(Task) %TAGS(Tags) %6CLOCKSUM(Clock) %8Effort(Effort)
+#+PROPERTY: Effort_ALL 0:05 0:10 0:15 0:30 1:00 1:30 2:00 3:00 4:00 6:00 8:00
+#+PROPERTY: Rating_ALL + ++ +++ ++++ +++++
+#+ARCHIVE: ~/org/myarchive.org::
+#+OPTIONS: d:t \n:t p:t todo:nil
