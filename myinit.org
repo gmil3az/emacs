@@ -976,6 +976,7 @@ Move Where I mean
    '(org-hide-leading-stars t)
    '(org-startup-folded (quote overview))
    '(org-startup-indented t)
+   '(org-log-into-drawer t)
    )
 
   (setq org-file-apps
