@@ -964,6 +964,16 @@ Move Where I mean
 #+BEGIN_SRC emacs-lisp
   (setenv "BROWSER" "chromium-browser")
 
+  (setq package-check-signature nil)
+  (use-package org-gcal
+    :ensure t
+    :config
+    (setq org-gcal-client-id "779021698967-vf8mobq6esipd1nnbalrsqv5iirm5qea.apps.googleusercontent.com"
+          org-gcal-client-secret "UUg5XjR9XJFBwxmLQ7PVu-zX"
+          org-gcal-file-alist '(("dupilo.mileas@gmail.com" .  "~/Dropbox/dupilo.mileas@gmail.com/gcal.org"))))
+  (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
+  (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync) ))
+
   (use-package org-bullets
     :ensure t
     :config
@@ -1004,10 +1014,10 @@ Move Where I mean
   (global-set-key (kbd "C-c c") 'org-capture)
   (global-set-key (kbd "<f7>") 'org-id-get-create)
 
-  (setq org-agenda-files (list "~/org/cal.org"
+  (setq org-agenda-files (list "~/Dropbox/dupilo.mileas@gmail.com/gcal.org"
                                "~/org/i.org"))
   (setq org-capture-templates
-        '(("a" "Appointment" entry (file  "~/org/cal.org" )
+        '(("a" "Appointment" entry (file  "~/Dropbox/dupilo.mileas@gmail.com/gcal.org" )
            "* %?\n\n%^T\n\n:PROPERTIES:\n\n:END:\n\n")
           ("l" "Link" entry (file+headline "~/org/links.org" "Links")
            "* %? %^L %^g \n%T" :prepend t)
