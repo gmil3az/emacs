@@ -1014,6 +1014,22 @@ Move Where I mean
   (global-set-key (kbd "C-c c") 'org-capture)
   (global-set-key (kbd "<f7>") 'org-id-get-create)
 
+  (defun my/copy-id-to-clipboard() "Copy the ID property value to killring,
+  if no ID is there then create a new unique ID. 
+  This function works only in org-mode buffers.
+ 
+  The purpose of this function is to easily construct id:-links to 
+  org-mode items. If its assigned to a key it saves you marking the
+  text and copying to the killring."
+         (interactive)
+         (when (eq major-mode 'org-mode) ; do this only in org-mode buffers
+           (setq mytmpid (funcall 'org-id-get-create))
+           (kill-new mytmpid)
+           (message "Copied %s to killring (clipboard)" mytmpid)
+           ))
+
+  (global-set-key (kbd "<f6>") 'my/copy-id-to-clipboard)
+
   (setq org-agenda-files (list "~/Dropbox/dupilo.mileas@gmail.com/gcal.org"
                                "~/org/i.org"))
   (setq org-capture-templates
