@@ -1,7 +1,8 @@
 (require 'package)
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
+(setq package-archives
+	     '(("melpa" . "https://melpa.org/packages/")
+	       ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
 ;; Bootstrap `use-package'
@@ -49,11 +50,15 @@
  '(org-directory "~/org")
  '(org-export-html-postamble nil)
  '(org-hide-leading-stars t)
+ '(org-log-into-drawer t)
+ '(org-modules
+   (quote
+    (org-bbdb org-bibtex org-docview org-gnus org-habit org-info org-irc org-mhe org-rmail org-w3m)))
  '(org-startup-folded (quote overview))
  '(org-startup-indented t)
  '(package-selected-packages
    (quote
-    (better-shell prodigy try wgrep which-key dired+ git-timemachine git-gutter magit shell-pop shell-switcher noflet org-ac org-bullets markdown-mode ac-cider cider dante haskell-mode ggtags virtualenvwrapper elpy jedi nodejs-repl tern-auto-complete tern js2-refactor ac-js2 js2-mode emmet-mode flycheck yasnippet auto-complete treemacs-projectile treemacs counsel-projectile projectile framemove ace-window back-button dumb-jump smart-forward visual-regexp-steroids visual-regexp counsel jump-char key-chord avy mwim origami iedit undo-tree smartparens paredit hungry-delete string-edit move-text change-inner expand-region multiple-cursors beacon default-text-scale darcula-theme zenburn-theme use-package)))
+    (org org-gcal better-shell prodigy try wgrep which-key dired+ git-timemachine git-gutter magit shell-pop shell-switcher noflet org-ac org-bullets markdown-mode ac-cider cider dante haskell-mode ggtags virtualenvwrapper elpy jedi nodejs-repl tern-auto-complete tern js2-refactor ac-js2 js2-mode emmet-mode flycheck yasnippet auto-complete treemacs-projectile treemacs counsel-projectile projectile framemove ace-window back-button dumb-jump smart-forward visual-regexp-steroids visual-regexp counsel jump-char key-chord avy mwim origami iedit undo-tree smartparens paredit hungry-delete string-edit move-text change-inner expand-region multiple-cursors beacon default-text-scale darcula-theme zenburn-theme use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map
