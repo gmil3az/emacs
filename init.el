@@ -91,4 +91,4 @@
  '(aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0)))))
 
 (set-face-attribute 'default nil :height 160)
-
+(set-face-attribute 'region nil :background "#666")
