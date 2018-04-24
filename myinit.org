@@ -6,6 +6,7 @@
   (setq inhibit-startup-message t)
   (tool-bar-mode -1)
   (global-hl-line-mode t)
+  (global-linum-mode)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
