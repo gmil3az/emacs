@@ -761,7 +761,7 @@ Move Where I mean
     :ensure t
     :init
     (progn
-      (ac-config-default)
+      ;; (ac-config-default)
       (global-auto-complete-mode t)
       ))
 #+END_SRC
@@ -773,7 +773,7 @@ Move Where I mean
   (use-package yasnippet
     :ensure t
     :init
-      (yas-global-mode 1))
+    (yas-global-mode 1))
 #+END_SRC
 
 #+RESULTS:
