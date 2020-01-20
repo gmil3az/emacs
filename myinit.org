@@ -806,11 +806,11 @@ Move Where I mean
 #+BEGIN_SRC emacs-lisp
   (use-package js2-mode
     :ensure t
-    :ensure ac-js2
+    ;; :ensure ac-js2
     :init
     (progn
       (add-hook 'js-mode-hook 'js2-minor-mode)
-      (add-hook 'js2-mode-hook 'ac-js2-mode)
+      ;; (add-hook 'js2-mode-hook 'ac-js2-mode)
       ))
 
   (use-package js2-refactor
@@ -830,6 +830,8 @@ Move Where I mean
       (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
       (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
       (tern-ac-setup)
+      (setenv "PATH" (concat (getenv "PATH") ":/Users/g.mileastrap/.nvm/versions/node/v10.18.0/bin"))
+      (setq exec-path (append exec-path '("/Users/g.mileastrap/.nvm/versions/node/v10.18.0/bin")))
       ))
 
   ;;(use-package jade
@@ -838,14 +840,13 @@ Move Where I mean
 
   (use-package nodejs-repl
     :ensure t
-    )
-
-  (add-hook 'js-mode-hook
+    :init (add-hook 'js-mode-hook
             (lambda ()
               (define-key js-mode-map (kbd "C-x C-e") 'nodejs-repl-send-last-sexp)
               (define-key js-mode-map (kbd "C-c C-r") 'nodejs-repl-send-region)
               (define-key js-mode-map (kbd "C-c C-l") 'nodejs-repl-load-file)
-              (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl)))
+              (define-key js-mode-map (kbd "C-c C-z") 'nodejs-repl-switch-to-repl))))
+
 #+END_SRC
 
 #+RESULTS:
