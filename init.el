@@ -58,7 +58,7 @@
  '(org-startup-indented t)
  '(package-selected-packages
    (quote
-    (org-gcal org better-shell prodigy try wgrep which-key dired+ git-timemachine git-gutter magit shell-pop shell-switcher noflet org-ac org-bullets markdown-mode ac-cider cider dante haskell-mode ggtags virtualenvwrapper elpy jedi nodejs-repl tern-auto-complete tern js2-refactor ac-js2 js2-mode emmet-mode flycheck yasnippet auto-complete treemacs-projectile treemacs counsel-projectile projectile framemove ace-window back-button dumb-jump smart-forward visual-regexp-steroids visual-regexp counsel jump-char key-chord avy mwim origami iedit undo-tree smartparens paredit hungry-delete string-edit move-text change-inner expand-region multiple-cursors beacon default-text-scale darcula-theme zenburn-theme use-package)))
+    (company-solidity org-gcal org better-shell prodigy try wgrep which-key dired+ git-timemachine git-gutter magit shell-pop shell-switcher noflet org-ac org-bullets markdown-mode ac-cider cider dante haskell-mode ggtags virtualenvwrapper elpy jedi nodejs-repl tern-auto-complete tern js2-refactor ac-js2 js2-mode emmet-mode flycheck yasnippet auto-complete treemacs-projectile treemacs counsel-projectile projectile framemove ace-window back-button dumb-jump smart-forward visual-regexp-steroids visual-regexp counsel jump-char key-chord avy mwim origami iedit undo-tree smartparens paredit hungry-delete string-edit move-text change-inner expand-region multiple-cursors beacon default-text-scale darcula-theme zenburn-theme use-package)))
  '(pdf-view-midnight-colors (quote ("#DCDCCC" . "#383838")))
  '(vc-annotate-background "#2B2B2B")
  '(vc-annotate-color-map

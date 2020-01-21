@@ -886,6 +886,41 @@ Move Where I mean
 #+RESULTS:
 : t
 
+** Solidity
+#+BEGIN_SRC emacs-lisp
+  (use-package solidity-mode
+    :ensure t
+    :pin melpa
+    :mode "\\.sol$"
+    :config
+    (use-package company-solidity
+      :ensure t
+      :requires (company solidity-mode)
+      :commands (company-solidity)
+      )
+    (use-package solidity-flycheck
+      :ensure t
+      :requires (flycheck solidity-mode)
+      :custom
+      (solidity-flycheck-solc-checker-active t)
+      )
+    (push 'company-solidity company-backends))
+
+  ;; (use-package solidity-flycheck
+  ;;   :ensure t
+  ;;   :requires (flycheck solidity-mode)
+  ;;   :custom (progn
+  ;;             (solidity-flycheck-solc-checker-active t)
+  ;;             (setq flycheck-solidity-solium-soliumrcfile "/Users/g.mileastrap/.soliumrc.json")
+  ;;             ))
+
+  ;; (use-package solidity-mode
+  ;;   :ensure t
+  ;;   :init (progn
+  ;;           (setq solidity-solc-path "/usr/local/bin/solc")
+  ;;           (setq solidity-solium-path "/usr/local/bin/solium")
+  ;;           ))
+#+END_SRC 
 ** C++
 #+BEGIN_SRC emacs-lisp
   (use-package ggtags
