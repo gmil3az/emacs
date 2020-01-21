@@ -932,6 +932,9 @@ Move Where I mean
   (use-package flymake-go
     :ensure t)
 
+  (use-package go-guru
+    :ensure t)
+
   (defun set-exec-path-from-shell-PATH ()
     (let ((path-from-shell (replace-regexp-in-string
                             "[ \t\n]*$"
