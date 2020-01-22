@@ -923,8 +923,17 @@ Move Where I mean
 #+END_SRC 
 ** Golang
 #+BEGIN_SRC emacs-lisp
+
+  ;; (use-package go-mode
+  ;;   :ensure t)
+
   (use-package go-mode
-    :ensure t)
+    ;; :functions (go-packages-gopkgs go-update-tools)
+    :bind (:map go-mode-map
+                ([remap xref-find-definitions] . godef-jump)
+                ("C-c R" . go-remove-unused-imports)
+                ("<f1>" . godoc-at-point))
+    )
 
   (use-package go-autocomplete
     :ensure t)
