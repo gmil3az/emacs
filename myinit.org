@@ -1071,7 +1071,7 @@ Move Where I mean
     :ensure t
     :config
     (setq org-gcal-client-id "779021698967-vf8mobq6esipd1nnbalrsqv5iirm5qea.apps.googleusercontent.com"
-          org-gcal-client-secret "UUg5XjR9XJFBwxmLQ7PVu-zX"
+          org-gcal-client-secret ""
           org-gcal-file-alist '(("dupilo.mileas@gmail.com" .  "~/Dropbox/dupilo.mileas@gmail.com/gcal.org"))))
   (add-hook 'org-agenda-mode-hook (lambda () (org-gcal-sync) ))
   (add-hook 'org-capture-after-finalize-hook (lambda () (org-gcal-sync) ))
@@ -1119,7 +1119,7 @@ Move Where I mean
   (defun my/copy-id-to-clipboard() "Copy the ID property value to killring,
   if no ID is there then create a new unique ID. 
   This function works only in org-mode buffers.
- 
+
   The purpose of this function is to easily construct id:-links to 
   org-mode items. If its assigned to a key it saves you marking the
   text and copying to the killring."
